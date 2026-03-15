@@ -1,31 +1,35 @@
 {
+  // pages：配置小程序的所有页面路径，数组中第一个页面是小程序的默认首页
   "pages": [
-    "pages/home/home",
-    "pages/script-list/script-list",
-    "pages/script-detail/script-detail",
-    "pages/create-room/create-room",
-    "pages/room/room",
-    "pages/my-scripts/my-scripts",
-    "pages/profile/profile"
+    "pages/home/home",         // 首页页面路径
+    "pages/script-list/script-list", // 剧本列表页面路径
+    "pages/script-detail/script-detail", // 剧本详情页面路径
+    "pages/create-room/create-room", // 创建房间页面路径
+    "pages/room/room", // 房间页面路径
+    "pages/my-scripts/my-scripts", // 我的剧本页面路径
+    "pages/profile/profile" // 个人信息页面路径
   ],
+  // window：配置小程序的全局窗口样式
   "window": {
-    "backgroundTextStyle": "dark",
-    "navigationBarBackgroundColor": "#4CAF50",
-    "navigationBarTitleText": "桌趣",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#f5f5f5"
+    "backgroundTextStyle": "dark", // 下拉刷新时文字的样式，仅支持 dark/light
+    "navigationBarBackgroundColor": "#4CAF50", // 导航栏背景色（绿色）
+    "navigationBarTitleText": "桌趣", // 导航栏中间的标题文字
+    "navigationBarTextStyle": "white", // 导航栏文字颜色，仅支持 black/white
+    "backgroundColor": "#f5f5f5" // 页面下拉露出的背景色（浅灰色）
   },
+  // tabBar：配置小程序底部的标签栏（底部导航）
   "tabBar": {
-    "color": "#999",
-    "selectedColor": "#4CAF50",
-    "backgroundColor": "#fff",
-    "borderStyle": "white",
+    "color": "#999", // 未选中时标签文字的颜色（浅灰色）
+    "selectedColor": "#4CAF50", // 选中时标签文字的颜色（和导航栏一致的绿色）
+    "backgroundColor": "#fff", // 标签栏的背景色（白色）
+    "borderStyle": "white", // 标签栏上边框的颜色，仅支持 black/white
+    // list：配置标签栏的每一项，最多5个
     "list": [
       {
-        "pagePath": "pages/home/home",
-        "text": "首页",
-        "iconPath": "/images/home.png",
-        "selectedIconPath": "/images/home-active.png"
+        "pagePath": "pages/home/home", // 点击该标签跳转的页面路径
+        "text": "首页", // 标签显示的文字
+        "iconPath": "/images/home.png", // 未选中时的图标路径
+        "selectedIconPath": "/images/home-active.png" // 选中时的图标路径
       },
       {
         "pagePath": "pages/script-list/script-list",
@@ -47,6 +51,6 @@
       }
     ]
   },
-  "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "style": "v2", // 启用新版的组件样式
+  "sitemapLocation": "sitemap.json" // 配置小程序的sitemap文件路径（用于搜索引擎收录）
 }
