@@ -1,0 +1,55 @@
+<!--pages/profile/profile.wxml-->
+<view class="profile-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- 自定义导航栏 -->
+  <custom-navbar city="我的" bindcitytap="" />
+
+  <!-- 个人信息 -->
+  <view class="personal-info" bindtap="editPersonalInfo">
+    <view class="info-avatar">
+      <image class="avatar-img" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+    </view>
+    <view class="info-content">
+      <text class="info-name">{{userInfo.nickname || '未登录'}}</text>
+      <view class="info-tags">
+        <text class="tag" wx:for="{{userInfo.tags || ['新用户']}}" wx:key="index">{{item}}</text>
+      </view>
+    </view>
+    <text class="info-arrow">→</text>
+  </view>
+
+  <!-- 功能列表 -->
+  <view class="menu-list">
+    <view class="menu-item" bindtap="goToPage" data-page="system-notification">
+      <view class="menu-icon">🔔</view>
+      <text class="menu-title">系统通知</text>
+      <text class="menu-count" wx:if="{{systemNotificationCount > 0}}">{{systemNotificationCount}}</text>
+      <text class="menu-arrow">→</text>
+    </view>
+
+    <view class="menu-item" bindtap="goToPage" data-page="group-notification">
+      <view class="menu-icon">👥</view>
+      <text class="menu-title">组局通知</text>
+      <text class="menu-count" wx:if="{{groupNotificationCount > 0}}">{{groupNotificationCount}}</text>
+      <text class="menu-arrow">→</text>
+    </view>
+
+    <view class="menu-item" bindtap="goToPage" data-page="wallet-order">
+      <view class="menu-icon">💰</view>
+      <text class="menu-title">钱包订单</text>
+      <text class="menu-arrow">→</text>
+    </view>
+
+    <view class="menu-item" bindtap="goToPage" data-page="script-record">
+      <view class="menu-icon">📜</view>
+      <text class="menu-title">我的剧本记录</text>
+      <text class="menu-arrow">→</text>
+    </view>
+
+    <view class="menu-item" bindtap="goToPage" data-page="real-name-auth">
+      <view class="menu-icon">✅</view>
+      <text class="menu-title">个人实名认证</text>
+      <text class="menu-status">{{isAuthenticated ? '已认证' : '未认证'}}</text>
+      <text class="menu-arrow">→</text>
+    </view>
+  </view>
+</view>

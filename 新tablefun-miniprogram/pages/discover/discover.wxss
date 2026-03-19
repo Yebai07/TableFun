@@ -1,0 +1,224 @@
+/* pages/discover/discover.wxss */
+.discover-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 100rpx;
+  padding-top: calc(var(--status-bar-height) + var(--nav-bar-height));
+}
+
+/* 标签栏 */
+.tab-bar {
+  display: flex;
+  background: #fff;
+  padding: 0 20rpx;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 28rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.tab-item.active {
+  color: #4CAF50;
+  font-weight: 500;
+}
+
+.tab-item.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40rpx;
+  height: 4rpx;
+  background: #4CAF50;
+  border-radius: 2rpx;
+}
+
+/* 活动列表 */
+.activity-list {
+  padding: 20rpx;
+}
+
+.activity-card {
+  display: flex;
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  position: relative;
+}
+
+.activity-cover {
+  width: 200rpx;
+  height: 280rpx;
+  border-radius: 12rpx;
+  flex-shrink: 0;
+  margin-right: 24rpx;
+}
+
+.activity-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.activity-header {
+  margin-bottom: 12rpx;
+}
+
+.activity-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-tags {
+  display: flex;
+  gap: 8rpx;
+  flex-wrap: wrap;
+}
+
+.tag {
+  padding: 6rpx 16rpx;
+  background: #E8F5E9;
+  color: #4CAF50;
+  border-radius: 20rpx;
+  font-size: 20rpx;
+}
+
+.activity-script {
+  font-size: 24rpx;
+  color: #666;
+  margin-bottom: 12rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.activity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-bottom: 12rpx;
+}
+
+.info-item {
+  font-size: 24rpx;
+  color: #666;
+}
+
+.activity-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.organizer {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.organizer-avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+}
+
+.organizer-name {
+  font-size: 24rpx;
+  color: #333;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.player-count {
+  font-size: 24rpx;
+  color: #FF9800;
+  font-weight: 500;
+}
+
+.activity-status {
+  position: absolute;
+  top: 24rpx;
+  right: 24rpx;
+  padding: 8rpx 20rpx;
+  border-radius: 20rpx;
+  font-size: 20rpx;
+  font-weight: 500;
+}
+
+.activity-status.recruiting {
+  background: #E8F5E9;
+  color: #4CAF50;
+}
+
+.activity-status.urgent {
+  background: #FFEBEE;
+  color: #F44336;
+}
+
+.activity-status.full {
+  background: #f5f5f5;
+  color: #999;
+}
+
+.join-button {
+  position: absolute;
+  bottom: 24rpx;
+  right: 24rpx;
+  padding: 12rpx 32rpx;
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: #fff;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  font-weight: 500;
+  box-shadow: 0 4rpx 12rpx rgba(76, 175, 80, 0.3);
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 120rpx 0;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 24rpx;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 28rpx;
+  color: #999;
+  margin-bottom: 12rpx;
+}
+
+.empty-tip {
+  font-size: 24rpx;
+  color: #ccc;
+}

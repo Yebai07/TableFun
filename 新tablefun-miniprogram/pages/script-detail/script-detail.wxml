@@ -1,0 +1,192 @@
+<!--pages/script-detail/script-detail.wxml-->
+<view class="detail-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- 自定义导航栏 -->
+  <custom-navbar showBack="{{true}}" bindbacktap="goBack" />
+
+  <!-- 封面图 -->
+  <image class="script-cover" src="{{script.cover}}" mode="aspectFill" />
+
+  <!-- 主要信息 -->
+  <view class="info-section">
+    <view class="script-header">
+      <view class="script-title-row">
+        <text class="script-name">{{script.name}}</text>
+        <view class="collect-btn" bindtap="toggleCollect">
+          <text>{{isCollected ? '⭐' : '☆'}}</text>
+        </view>
+      </view>
+      <view class="script-tags">
+        <text class="tag tag-type">{{script.type}}</text>
+        <text class="tag tag-difficulty">{{script.difficulty}}</text>
+        <text class="tag tag-player">{{script.playerCount}}人</text>
+        <text class="tag">{{script.duration}}h</text>
+      </view>
+    </view>
+
+    <!-- 评分和热度 -->
+    <view class="stats-row">
+      <view class="stat-item">
+        <text class="stat-label">评分</text>
+        <text class="stat-value">{{script.rating}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">热度</text>
+        <text class="stat-value">{{script.playCount}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">房间数</text>
+        <text class="stat-value">{{script.roomCount}}</text>
+      </view>
+    </view>
+
+    <!-- 价格 -->
+    <view class="price-row">
+      <text class="price-label">剧本价格</text>
+      <text class="price-value {{script.isFree ? 'free' : ''}}">{{script.isFree ? '免费' : script.price + '金币'}}</text>
+    </view>
+
+    <!-- 正在拼车 -->
+    <view class="carpool-section">
+      <text class="section-title">🚗 正在拼车</text>
+      <view class="carpool-list">
+        <view class="carpool-item" wx:if="{{carpoolRecords.length > 0}}" wx:for="{{carpoolRecords}}" wx:key="id" bindtap="joinCarpool" data-id="{{item.id}}">
+          <view class="carpool-row">
+            <text class="carpool-shop">{{item.shopName}}</text>
+            <text class="carpool-distance">{{item.distance}}</text>
+          </view>
+          <view class="carpool-row">
+            <text class="carpool-time">{{item.startTime}}</text>
+            <text class="carpool-seats">还差{{item.neededPlayers}}人</text>
+          </view>
+        </view>
+        <view class="no-carpool" wx:if="{{carpoolRecords.length === 0}}">
+          <text class="no-carpool-text">暂无拼车信息，快来创建房间吧~</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 剧本简介 -->
+    <view class="section">
+      <text class="section-title">📖 剧本简介</text>
+      <text class="section-content">{{script.intro}}</text>
+    </view>
+
+    <!-- 故事背景 -->
+    <view class="section">
+      <text class="section-title">🎭 故事背景</text>
+      <text class="section-content">{{script.story}}</text>
+    </view>
+
+    <!-- 角色介绍 -->
+    <view class="section" wx:if="{{script.characters && script.characters.length > 0}}">
+      <text class="section-title">👥 角色介绍</text>
+      <view class="character-list">
+        <view class="character-item" wx:for="{{script.characters}}" wx:key="name">
+          <view class="character-avatar">{{item.name.charAt(0)}}</view>
+          <view class="character-info">
+            <text class="character-name">{{item.name}}</text>
+            <text class="character-desc">{{item.desc}}</text>
+          </view>
+          <text class="character-gender">{{item.gender}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 亮点特色 -->
+    <view class="section">
+      <text class="section-title">✨ 亮点特色</text>
+      <view class="features">
+        <view class="feature-item" wx:for="{{script.features}}" wx:key="*this">
+          <text class="feature-icon">✓</text>
+          <text class="feature-text">{{item}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 适合人群 -->
+    <view class="section">
+      <text class="section-title">🎯 适合人群</text>
+      <text class="section-content">{{script.suitable}}</text>
+    </view>
+
+    <!-- 注意事项 -->
+    <view class="section">
+      <text class="section-title">⚠️ 注意事项</text>
+      <text class="section-content">{{script.notice}}</text>
+    </view>
+
+    <!-- 剧本评价 -->
+    <view class="section">
+      <view class="reviews-header">
+        <text class="section-title">💬 剧本评价</text>
+        <text class="reviews-count">{{script.reviews ? script.reviews.length : 0}}条评价</text>
+      </view>
+      <!-- 筛选按钮 -->
+      <view class="review-filters">
+        <view class="filter-btn {{filterType === 'all' ? 'active' : ''}}" bindtap="filterReviews" data-type="all">
+          <text>全部</text>
+        </view>
+        <view class="filter-btn {{filterType === 'sameCity' ? 'active' : ''}}" bindtap="filterReviews" data-type="sameCity">
+          <text>同城</text>
+        </view>
+        <view class="filter-btn {{filterType === 'recommended' ? 'active' : ''}}" bindtap="filterReviews" data-type="recommended">
+          <text>推荐</text>
+        </view>
+        <view class="filter-btn {{filterType === 'average' ? 'active' : ''}}" bindtap="filterReviews" data-type="average">
+          <text>一般</text>
+        </view>
+        <view class="filter-btn {{filterType === 'bad' ? 'active' : ''}}" bindtap="filterReviews" data-type="bad">
+          <text>不行</text>
+        </view>
+      </view>
+      <view class="review-summary">
+        <view class="overall-rating">
+          <text class="rating-score">{{script.rating}}</text>
+          <text class="rating-star">★★★★★</text>
+        </view>
+        <view class="rating-distribution">
+          <view class="rating-bar" wx:for="{{[5,4,3,2,1]}}" wx:key="*this">
+            <text class="bar-label">{{item}}星</text>
+            <view class="bar-track">
+              <view class="bar-fill" style="width: {{getRatingPercent(item, script.reviews)}}%"></view>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="review-list">
+        <view class="review-item" wx:for="{{filteredReviews}}" wx:key="id">
+          <view class="review-header">
+            <image class="review-avatar" src="{{item.avatar}}" mode="aspectFill" />
+            <view class="review-user">
+              <text class="review-name">{{item.nickname}}</text>
+              <text class="review-time">{{item.time}}</text>
+            </view>
+            <text class="review-rating">{{item.rating}}星</text>
+          </view>
+          <text class="review-content">{{item.content}}</text>
+          <view class="review-tags" wx:if="{{item.tags && item.tags.length > 0}}">
+            <text class="review-tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:for-index="tagIndex" wx:key="tagIndex">{{tag}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="no-reviews" wx:if="{{!filteredReviews || filteredReviews.length === 0}}">
+        <text class="no-reviews-text">暂无评价，快来抢沙发吧~</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="bottom-bar">
+    <view class="action-btn secondary" bindtap="shareScript">
+      <text class="btn-icon">📤</text>
+      <text>分享</text>
+    </view>
+    <view class="action-btn secondary" bindtap="goToRooms">
+      <text class="btn-icon">🏠</text>
+      <text>房间</text>
+    </view>
+    <button class="action-btn primary" bindtap="createRoom">
+      创建房间
+    </button>
+  </view>
+</view>

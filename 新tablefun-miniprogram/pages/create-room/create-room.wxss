@@ -1,0 +1,307 @@
+/* pages/create-room/create-room.wxss */
+.create-room-container {
+  min-height: 100vh;
+  background-color: #1a1a2e;
+  padding: 30rpx;
+  padding-bottom: 140rpx;
+  padding-top: calc(var(--status-bar-height) + var(--nav-bar-height));
+}
+
+/* 区域 */
+.section {
+  margin-bottom: 40rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+  margin-bottom: 20rpx;
+}
+
+/* 剧本选择器 */
+.script-selector {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20rpx;
+  border: 2rpx dashed rgba(255, 255, 255, 0.2);
+}
+
+.selected-script-cover {
+  width: 100rpx;
+  height: 140rpx;
+  border-radius: 12rpx;
+  margin-right: 20rpx;
+}
+
+.selected-script-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.selected-script-name {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.script-placeholder {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 40rpx 0;
+}
+
+.placeholder-icon {
+  font-size: 64rpx;
+  opacity: 0.5;
+}
+
+.placeholder-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.arrow {
+  font-size: 36rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 表单项 */
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.form-label {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12rpx;
+}
+
+.form-input {
+  width: 100%;
+  height: 80rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  padding: 0 24rpx;
+  color: #fff;
+  font-size: 28rpx;
+  border: none;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  color: #fff;
+  font-size: 28rpx;
+  border: none;
+}
+
+/* 设置项 */
+.setting-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.05);
+}
+
+.setting-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.setting-label {
+  font-size: 28rpx;
+  color: #fff;
+}
+
+.setting-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.setting-switch {
+  transform: scale(0.9);
+}
+
+/* 角色选择 */
+.character-selection {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.character-option {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12rpx;
+}
+
+.character-avatar {
+  width: 60rpx;
+  height: 60rpx;
+  background: linear-gradient(135deg, #e84545 0%, #c0392b 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.character-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.character-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.character-gender {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.character-player {
+  font-size: 24rpx;
+  color: #2ecc71;
+}
+
+.unassigned {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* 创建按钮 */
+.create-btn-container {
+  margin-top: 40rpx;
+}
+
+.btn-create {
+  width: 100%;
+  height: 90rpx;
+  background: linear-gradient(135deg, #e84545 0%, #c0392b 100%);
+  color: #fff;
+  border: none;
+  border-radius: 45rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.btn-create[disabled] {
+  background: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 剧本选择弹窗 */
+.modal-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 100;
+}
+
+.script-modal {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70vh;
+  background: #1a1a2e;
+  border-radius: 30rpx 30rpx 0 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 101;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.05);
+}
+
+.modal-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.modal-close {
+  font-size: 40rpx;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.script-list-scroll {
+  flex: 1;
+  padding: 20rpx;
+}
+
+.modal-script-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 20rpx;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16rpx;
+  margin-bottom: 16rpx;
+}
+
+.modal-script-cover {
+  width: 80rpx;
+  height: 112rpx;
+  border-radius: 12rpx;
+}
+
+.modal-script-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12rpx;
+}
+
+.modal-script-name {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #fff;
+}
+
+.modal-check {
+  width: 50rpx;
+  height: 50rpx;
+  background: #e84545;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 28rpx;
+  font-weight: bold;
+}

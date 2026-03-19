@@ -1,0 +1,62 @@
+/* components/custom-navbar/custom-navbar.wxss */
+.custom-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #FFFFFF;
+  z-index: 9999;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.08);
+}
+
+.nav-left {
+  padding-left: 20rpx;
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  flex-shrink: 0;
+}
+
+.back-icon {
+  font-size: 60rpx;
+  color: #333;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.city-text {
+  font-size: 28rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.city-arrow {
+  font-size: 20rpx;
+  color: #999;
+}
+
+.nav-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20rpx;
+}
+
+.nav-title {
+  font-size: 44rpx;
+  font-weight: bold;
+  background: linear-gradient(135deg, #4CAF50 0%, #ffffff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-right {
+  padding-right: 20rpx;
+  flex-shrink: 0;
+  width: 80rpx;
+}

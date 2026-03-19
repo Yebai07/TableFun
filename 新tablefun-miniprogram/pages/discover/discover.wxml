@@ -1,0 +1,67 @@
+<!--pages/discover/discover.wxml-->
+<view class="discover-container">
+  <!-- 自定义导航栏 -->
+  <custom-navbar city="" bindcitytap="" />
+
+  <!-- 顶部标签 -->
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === item.key ? 'active' : ''}}"
+          wx:for="{{tabs}}"
+          wx:key="key"
+          bindtap="switchTab"
+          data-tab="{{item.key}}">
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- 活动列表 -->
+  <view class="activity-list">
+    <!-- 热门活动 -->
+    <view class="activity-card" wx:for="{{currentTab === 'hot' ? hotActivities : currentTab === 'new' ? newActivities : nearbyActivities}}" wx:key="id">
+      <image class="activity-cover" src="{{item.scriptCover}}" mode="aspectFill" />
+
+      <view class="activity-content">
+        <view class="activity-header">
+          <text class="activity-title">{{item.title}}</text>
+          <view class="activity-tags">
+            <text class="tag" wx:for="{{item.tags}}" wx:for-item="tag" wx:key="*this">{{tag}}</text>
+          </view>
+        </view>
+
+        <text class="activity-script">剧本: {{item.scriptName}}</text>
+
+        <view class="activity-info">
+          <text class="info-item">📅 {{item.date}}</text>
+          <text class="info-item">📍 {{item.location}}</text>
+        </view>
+
+        <view class="activity-footer">
+          <view class="organizer" bindtap="contactOrganizer">
+            <image class="organizer-avatar" src="{{item.avatar}}" mode="aspectFill" />
+            <text class="organizer-name">{{item.organizer}}</text>
+          </view>
+          <view class="player-info">
+            <text class="player-count">{{item.currentPlayers}}/{{item.playerCount}}人</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="activity-status {{item.status}}">
+        <text wx:if="{{item.status === 'recruiting'}}">招募中</text>
+        <text wx:if="{{item.status === 'urgent'}}">急缺人</text>
+        <text wx:if="{{item.status === 'full'}}">已满员</text>
+      </view>
+
+      <view class="join-button" bindtap="joinActivity" data-id="{{item.id}}">
+        加入
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{(currentTab === 'hot' && hotActivities.length === 0) || (currentTab === 'new' && newActivities.length === 0) || (currentTab === 'nearby' && nearbyActivities.length === 0)}}">
+      <text class="empty-icon">📋</text>
+      <text class="empty-text">暂无活动</text>
+      <text class="empty-tip">快去发一个活动吧</text>
+    </view>
+  </view>
+</view>

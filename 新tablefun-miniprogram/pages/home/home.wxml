@@ -1,0 +1,190 @@
+<!--pages/home/home.wxml-->
+<view class="home-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- 自定义导航栏 -->
+  <custom-navbar city="{{currentCity}}" bindcitytap="showCitySelector" />
+
+  <!-- 轮播图 -->
+  <swiper class="banner-swiper" indicator-dots indicator-color="rgba(0,0,0,0.3)" indicator-active-color="#4CAF50" autoplay circular>
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <image class="banner-image" src="{{item.image}}" mode="aspectFill" />
+      <view class="banner-content">
+        <text class="banner-title">{{item.title}}</text>
+        <text class="banner-subtitle">{{item.subtitle}}</text>
+      </view>
+    </swiper-item>
+  </swiper>
+
+  <!-- 推荐剧本 -->
+  <view class="section" id="recommend-section">
+    <!-- 筛选栏 -->
+    <view class="filter-bar {{isFilterFixed ? 'fixed' : ''}}">
+      <scroll-view class="filter-scroll" scroll-x>
+        <view class="filter-item {{filterType === 'date' ? 'active' : ''}}" bindtap="selectFilter" data-type="date">
+          <text class="filter-text">{{selectedDateLabel || '日期'}}</text>
+          <text class="filter-arrow">▼</text>
+        </view>
+        <view class="filter-item {{filterType === 'area' ? 'active' : ''}}" bindtap="selectFilter" data-type="area">
+          <text class="filter-text">{{selectedArea || '区域'}}</text>
+          <text class="filter-arrow">▼</text>
+        </view>
+        <view class="filter-item {{filterType === 'type' ? 'active' : ''}}" bindtap="selectFilter" data-type="type">
+          <text class="filter-text">{{selectedType || '类型'}}</text>
+          <text class="filter-arrow">▼</text>
+        </view>
+        <view class="filter-item {{filterType === 'sort' ? 'active' : ''}}" bindtap="selectFilter" data-type="sort">
+          <text class="filter-text">{{selectedSortLabel || '排序'}}</text>
+          <text class="filter-arrow">▼</text>
+        </view>
+        <view class="filter-item {{showSpecialUrgent ? 'active' : ''}}" bindtap="toggleSpecialUrgent">
+          <text class="filter-text">特价急车</text>
+        </view>
+        <view class="filter-item {{showFull ? 'active' : ''}}" bindtap="toggleFull">
+          <text class="filter-text">即将满车</text>
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="room-item" wx:for="{{filteredScripts.length > 0 ? filteredScripts : recommendScripts}}" wx:key="id" bindtap="viewScriptDetail" data-id="{{item.id}}">
+      <image class="room-cover" src="{{item.cover}}" mode="aspectFill" />
+      <view class="room-info">
+        <text class="room-name">{{item.name}}</text>
+        <text class="room-script">{{item.type}} · {{item.difficulty}} · {{item.playerCount}}人</text>
+        <view class="room-status">
+          <text class="status-text status-waiting">{{item.playCount}}人玩过</text>
+          <text class="room-players">评分 {{item.rating}}</text>
+        </view>
+        <text class="room-price">💰 {{item.price}}金币/人</text>
+        <view class="room-badges">
+          <text class="room-badge badge-special" wx:if="{{item.isSpecial}}">🎁 特价</text>
+          <text class="room-badge badge-urgent" wx:if="{{item.isUrgent}}">⚡ 急车</text>
+          <text class="room-badge badge-full" wx:if="{{item.isFull}}">🎯 即将满车</text>
+        </view>
+        <!-- 拼车记录 - 只显示最近一条 -->
+        <view class="carpool-record" wx:if="{{item.carpoolRecords && item.carpoolRecords.length > 0}}">
+          <view class="carpool-title">最近即将拼成</view>
+          <view class="carpool-item">
+            <view class="carpool-row carpool-row-gray">
+              <text class="carpool-shop">{{item.carpoolRecords[0].location}}</text>
+              <text class="carpool-distance">{{item.carpoolRecords[0].distance || '2.3km'}}</text>
+            </view>
+            <view class="carpool-row carpool-row-black">
+              <text class="carpool-datetime">{{item.carpoolRecords[0].date}} {{item.carpoolRecords[0].time}}</text>
+              <text class="carpool-needed">还需{{item.carpoolRecords[0].needed}}人</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      <view class="room-enter">→</view>
+    </view>
+  </view>
+</view>
+
+<!-- 发活动按钮 -->
+<view class="activity-button" bindtap="goToCreateRoom">
+  <view class="activity-icon">📝</view>
+  <text class="activity-text">发活动</text>
+</view>
+
+<!-- 发活动按钮 -->
+<view class="activity-button" bindtap="goToCreateRoom">
+  <view class="activity-icon">📝</view>
+  <text class="activity-text">发活动</text>
+</view>
+
+<!-- 城市选择弹窗 -->
+<view class="modal-mask" wx:if="{{showCityModal}}" bindtap="hideCityModal">
+  <view class="city-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">{{isDistrictMode ? '选择区域' : '选择城市'}}</text>
+      <text class="modal-close" bindtap="hideCityModal">✕</text>
+    </view>
+    <scroll-view class="city-list" scroll-y wx:if="{{!isDistrictMode}}">
+      <view class="city-section" wx:for="{{cityData}}" wx:key="letter">
+        <text class="city-letter">{{item.letter}}</text>
+        <view class="city-items">
+          <view class="city-item {{currentCity === city ? 'active' : ''}}" wx:for="{{item.cities}}" wx:for-item="city" wx:key="*this" bindtap="selectCity" data-city="{{city}}">
+            {{city}}
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <scroll-view class="district-list" scroll-y wx:else>
+      <view class="district-items">
+        <view class="city-item {{selectedArea === district ? 'active' : ''}}" wx:for="{{districts}}" wx:for-item="district" wx:key="*this" bindtap="selectCity" data-city="{{district}}">
+          {{district}}
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view>
+
+<!-- 发活动按钮 -->
+<view class="activity-button" bindtap="goToCreateRoom">
+  <view class="activity-icon">📝</view>
+  <text class="activity-text">发活动</text>
+</view>
+
+<!-- 日期选择弹窗 -->
+<view class="modal-mask" wx:if="{{showDateModal}}" bindtap="hideDateModal">
+  <view class="date-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">选择日期</text>
+      <text class="modal-close" bindtap="hideDateModal">✕</text>
+    </view>
+    <view class="date-list">
+      <view class="date-item {{selectedDate === item.value ? 'active' : ''}}" wx:for="{{dateOptions}}" wx:key="value" bindtap="selectDate" data-date="{{item.value}}">
+        <text class="date-label">{{item.label}}</text>
+        <text class="date-sub">{{item.sub}}</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 发活动按钮 -->
+<view class="activity-button" bindtap="goToCreateRoom">
+  <view class="activity-icon">📝</view>
+  <text class="activity-text">发活动</text>
+</view>
+
+<!-- 类型选择弹窗 -->
+<view class="modal-mask" wx:if="{{showTypeModal}}" bindtap="hideTypeModal">
+  <view class="type-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">选择类型</text>
+      <text class="modal-close" bindtap="hideTypeModal">✕</text>
+    </view>
+    <view class="type-grid">
+      <view class="type-grid-item {{selectedType === item ? 'active' : ''}}" wx:for="{{scriptTypes}}" wx:key="*this" bindtap="selectScriptType" data-type="{{item}}">
+        {{item}}
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 发活动按钮 -->
+<view class="activity-button" bindtap="goToCreateRoom">
+  <view class="activity-icon">📝</view>
+  <text class="activity-text">发活动</text>
+</view>
+
+<!-- 排序选择弹窗 -->
+<view class="modal-mask" wx:if="{{showSortModal}}" bindtap="hideSortModal">
+  <view class="sort-modal" catchtap="stopPropagation">
+    <view class="modal-header">
+      <text class="modal-title">排序方式</text>
+      <text class="modal-close" bindtap="hideSortModal">✕</text>
+    </view>
+    <view class="sort-list">
+      <view class="sort-item {{selectedSort === item.value ? 'active' : ''}}" wx:for="{{sortOptions}}" wx:key="value" bindtap="selectSort" data-sort="{{item.value}}">
+        <text class="sort-label">{{item.label}}</text>
+        <text class="sort-icon" wx:if="{{selectedSort === item.value}}">✓</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 发活动按钮 -->
+<view class="activity-button" bindtap="goToCreateRoom">
+  <view class="activity-icon">📝</view>
+  <text class="activity-text">发活动</text>
+</view>
