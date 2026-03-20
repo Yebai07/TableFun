@@ -29,5 +29,42 @@ App({
     this.globalData.userInfo = null;
     this.globalData.userId = null;
     wx.removeStorageSync('userInfo');
+  },
+
+  // 增加金币
+  addCoins(amount) {
+    const userInfo = this.globalData.userInfo;
+    if (!userInfo) {
+      return false;
+    }
+    userInfo.coins = (userInfo.coins || 1000) + amount;
+    this.globalData.userInfo = userInfo;
+    wx.setStorageSync('userInfo', userInfo);
+    return true;
+  },
+
+  // 减少金币
+  reduceCoins(amount) {
+    const userInfo = this.globalData.userInfo;
+    if (!userInfo) {
+      return false;
+    }
+    const currentCoins = userInfo.coins || 1000;
+    if (currentCoins < amount) {
+      return false; // 金币不足
+    }
+    userInfo.coins = currentCoins - amount;
+    this.globalData.userInfo = userInfo;
+    wx.setStorageSync('userInfo', userInfo);
+    return true;
+  },
+
+  // 获取当前金币数
+  getCoins() {
+    const userInfo = this.globalData.userInfo;
+    if (!userInfo) {
+      return 1000;
+    }
+    return userInfo.coins || 1000;
   }
 })

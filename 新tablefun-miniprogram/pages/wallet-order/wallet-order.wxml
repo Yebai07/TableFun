@@ -1,0 +1,38 @@
+<!--pages/wallet-order/wallet-order.wxml-->
+<view class="wallet-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- 自定义导航栏 -->
+  <custom-navbar showBack="{{true}}" city="钱包订单" bind:backtap="goBack" />
+
+  <!-- 金币卡片 -->
+  <view class="coin-card">
+    <view class="coin-title">我的金币</view>
+    <view class="coin-amount">{{userInfo.coins || 1000}}</view>
+    <view class="coin-label">当前余额</view>
+    <button class="recharge-btn" bindtap="recharge">充值</button>
+  </view>
+
+  <!-- 交易明细 -->
+  <view class="transaction-section">
+    <view class="section-title">交易明细</view>
+    <scroll-view class="transaction-list" scroll-y>
+      <view class="transaction-item" wx:for="{{transactions}}" wx:key="id">
+        <view class="transaction-icon {{item.type === 'income' ? 'income' : 'expense'}}">
+          {{item.type === 'income' ? '+' : '-'}}
+        </view>
+        <view class="transaction-info">
+          <text class="transaction-name">{{item.name}}</text>
+          <text class="transaction-time">{{item.time}}</text>
+        </view>
+        <view class="transaction-amount {{item.type === 'income' ? 'income' : 'expense'}}">
+          {{item.type === 'income' ? '+' : '-'}}{{item.amount}}金币
+        </view>
+      </view>
+
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{transactions.length === 0}}">
+        <text class="empty-icon">📝</text>
+        <text class="empty-text">暂无交易记录</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

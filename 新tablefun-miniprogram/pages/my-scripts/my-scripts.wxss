@@ -15,6 +15,7 @@
   margin: 20rpx;
   border-radius: 20rpx;
   box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.08);
+  gap: 16rpx;
 }
 
 .info-avatar {
@@ -35,10 +36,33 @@
   gap: 8rpx;
 }
 
+.info-top {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
 .info-name {
   font-size: 32rpx;
   font-weight: bold;
   color: #333;
+}
+
+.info-coins {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  margin-left: 8rpx;
+}
+
+.coins-icon {
+  font-size: 48rpx;
+}
+
+.coins-count {
+  font-size: 52rpx;
+  font-weight: bold;
+  color: #FF6B35;
 }
 
 .info-tags {

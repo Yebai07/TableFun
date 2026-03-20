@@ -1,10 +1,11 @@
 <!--pages/home/home.wxml-->
-<view class="home-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+<view class="home-container">
   <!-- 自定义导航栏 -->
   <custom-navbar city="{{currentCity}}" bindcitytap="showCitySelector" />
 
   <!-- 轮播图 -->
-  <swiper class="banner-swiper" indicator-dots indicator-color="rgba(0,0,0,0.3)" indicator-active-color="#4CAF50" autoplay circular>
+  <view class="banner-section">
+    <swiper class="banner-swiper" indicator-dots indicator-color="rgba(0,0,0,0.3)" indicator-active-color="#4CAF50" autoplay circular>
     <swiper-item wx:for="{{banners}}" wx:key="id">
       <image class="banner-image" src="{{item.image}}" mode="aspectFill" />
       <view class="banner-content">
@@ -13,9 +14,13 @@
       </view>
     </swiper-item>
   </swiper>
+  </view>
 
   <!-- 推荐剧本 -->
   <view class="section" id="recommend-section">
+    <view class="section-header">
+      <text class="section-title">推荐剧本</text>
+    </view>
     <!-- 筛选栏 -->
     <view class="filter-bar {{isFilterFixed ? 'fixed' : ''}}">
       <scroll-view class="filter-scroll" scroll-x>
@@ -44,7 +49,7 @@
       </scroll-view>
     </view>
 
-    <view class="room-item" wx:for="{{filteredScripts.length > 0 ? filteredScripts : recommendScripts}}" wx:key="id" bindtap="viewScriptDetail" data-id="{{item.id}}">
+    <view class="room-item" wx:for="{{filteredScripts.length > 0 ? filteredScripts : recommendScripts}}" wx:key="id" bindtap="goToScriptDetail" data-id="{{item.id}}">
       <image class="room-cover" src="{{item.cover}}" mode="aspectFill" />
       <view class="room-info">
         <text class="room-name">{{item.name}}</text>
@@ -93,7 +98,7 @@
 
 <!-- 城市选择弹窗 -->
 <view class="modal-mask" wx:if="{{showCityModal}}" bindtap="hideCityModal">
-  <view class="city-modal" catchtap="stopPropagation">
+  <view class="city-modal {{isDistrictMode ? 'dropdown-modal' : ''}}" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">{{isDistrictMode ? '选择区域' : '选择城市'}}</text>
       <text class="modal-close" bindtap="hideCityModal">✕</text>
@@ -126,7 +131,7 @@
 
 <!-- 日期选择弹窗 -->
 <view class="modal-mask" wx:if="{{showDateModal}}" bindtap="hideDateModal">
-  <view class="date-modal" catchtap="stopPropagation">
+  <view class="date-modal dropdown-modal" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">选择日期</text>
       <text class="modal-close" bindtap="hideDateModal">✕</text>
@@ -148,7 +153,7 @@
 
 <!-- 类型选择弹窗 -->
 <view class="modal-mask" wx:if="{{showTypeModal}}" bindtap="hideTypeModal">
-  <view class="type-modal" catchtap="stopPropagation">
+  <view class="type-modal dropdown-modal" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">选择类型</text>
       <text class="modal-close" bindtap="hideTypeModal">✕</text>
@@ -169,7 +174,7 @@
 
 <!-- 排序选择弹窗 -->
 <view class="modal-mask" wx:if="{{showSortModal}}" bindtap="hideSortModal">
-  <view class="sort-modal" catchtap="stopPropagation">
+  <view class="sort-modal dropdown-modal" catchtap="stopPropagation">
     <view class="modal-header">
       <text class="modal-title">排序方式</text>
       <text class="modal-close" bindtap="hideSortModal">✕</text>

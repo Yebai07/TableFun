@@ -1,7 +1,7 @@
 <!--pages/script-list/script-list.wxml-->
 <view class="script-list-container">
   <!-- 自定义导航栏 -->
-  <custom-navbar city="" bindcitytap="" />
+  <custom-navbar showBack="{{false}}"/>
 
   <!-- 搜索和筛选 -->
   <view class="filter-bar">
@@ -34,20 +34,22 @@
     <view class="script-item" wx:for="{{filteredScripts}}" wx:key="id" bindtap="viewScriptDetail" data-id="{{item.id}}">
       <image class="script-cover" src="{{item.cover}}" mode="aspectFill" />
       <view class="script-info">
-        <text class="script-name">{{item.name}}</text>
-        <text class="script-intro">{{item.intro}}</text>
+        <view class="script-header">
+          <text class="script-name">{{item.name}}</text>
+          <text class="price">{{item.isFree ? '免费' : item.price + '金币/人'}}</text>
+        </view>
         <view class="script-tags">
           <text class="tag tag-type">{{item.type}}</text>
           <text class="tag tag-difficulty">{{item.difficulty}}</text>
           <text class="tag tag-player">{{item.playerCount}}人</text>
           <text class="tag">{{item.duration}}h</text>
         </view>
+        <text class="script-intro">{{item.intro}}</text>
         <view class="script-meta">
           <view class="meta-left">
             <text class="rating">⭐ {{item.rating}}</text>
             <text class="play-count">{{item.playCount}}人玩过</text>
           </view>
-          <text class="price">{{item.isFree ? '免费' : item.price + '金币'}}</text>
         </view>
       </view>
     </view>

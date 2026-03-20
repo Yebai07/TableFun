@@ -35,6 +35,12 @@
   gap: 8rpx;
 }
 
+.info-top {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
 .info-name {
   font-size: 32rpx;
   font-weight: bold;
@@ -63,6 +69,27 @@
 .info-arrow {
   font-size: 32rpx;
   color: #ccc;
+}
+
+.info-coins {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 6rpx 12rpx;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border-radius: 16rpx;
+  box-shadow: 0 2rpx 8rpx rgba(255, 165, 0, 0.3);
+  margin-left: auto;
+}
+
+.coins-icon {
+  font-size: 24rpx;
+}
+
+.coins-count {
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #fff;
 }
 
 /* 菜单列表 */

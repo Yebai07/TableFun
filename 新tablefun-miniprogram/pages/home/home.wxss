@@ -4,7 +4,12 @@
   background-color: #fff;
   padding: 0;
   padding-bottom: 100rpx;
-  padding-top: 0;
+  padding-top: calc(var(--status-bar-height) + var(--nav-bar-height) + 20rpx);
+}
+
+/* 轮播图容器 */
+.banner-section {
+  padding: 0 20rpx;
 }
 
 .fixed-filter-bar .filter-item {
@@ -370,6 +375,8 @@
 /* 区域 */
 .section {
   margin-bottom: 40rpx;
+  padding: 20rpx;
+  padding-top: 20rpx;
 }
 
 .section-header {
@@ -725,6 +732,17 @@
   z-index: 101;
 }
 
+/* 下拉弹窗样式 */
+.dropdown-modal {
+  bottom: auto !important;
+  left: 20rpx !important;
+  right: 20rpx !important;
+  margin-top: 180rpx;
+  border-radius: 16rpx !important;
+  max-height: 60vh;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
+}
+
 .date-modal {
   position: fixed;
   bottom: 0;
@@ -733,6 +751,17 @@
   background: #fff;
   border-radius: 30rpx 30rpx 0 0;
   z-index: 101;
+}
+
+.dropdown-modal {
+  top: auto;
+  left: 20rpx;
+  right: 20rpx;
+  bottom: auto;
+  margin-top: 180rpx;
+  max-height: 70vh;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.15);
 }
 
 .modal-header {
@@ -785,6 +814,7 @@
   flex: 1;
   padding: 20rpx;
   overflow-y: auto;
+  max-height: 50vh;
 }
 
 .city-item {

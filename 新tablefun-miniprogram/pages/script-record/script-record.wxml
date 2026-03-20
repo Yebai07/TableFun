@@ -1,0 +1,41 @@
+<!--pages/script-record/script-record.wxml-->
+<view class="record-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- 自定义导航栏 -->
+  <custom-navbar showBack="{{true}}" city="我的剧本记录" bind:backtap="goBack" />
+
+  <!-- 搜索框 -->
+  <view class="search-container">
+    <view class="search-box">
+      <text class="search-icon">🔍</text>
+      <input class="search-input" placeholder="搜索剧本名称" value="{{searchKeyword}}" bindinput="onSearchInput" bindconfirm="onSearch" />
+      <text class="search-clear" wx:if="{{searchKeyword}}" bindtap="clearSearch">✕</text>
+    </view>
+  </view>
+
+  <!-- 剧本记录列表 -->
+  <scroll-view class="record-list" scroll-y>
+    <view class="record-item" wx:for="{{filteredRecords}}" wx:key="id" bindtap="viewRecordDetail" data-id="{{item.id}}" data-script-id="{{item.scriptId}}">
+      <image class="record-cover" src="{{item.cover}}" mode="aspectFill" />
+      <view class="record-info">
+        <text class="record-name">{{item.name}}</text>
+        <view class="record-tags">
+          <text class="tag">{{item.type}}</text>
+          <text class="tag">{{item.difficulty}}</text>
+          <text class="tag">{{item.playerCount}}人</text>
+        </view>
+        <view class="record-meta">
+          <text class="record-time">{{item.playTime}}</text>
+          <text class="record-cost">花费：{{item.cost}}金币</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{filteredRecords.length === 0}}">
+      <text class="empty-icon">📜</text>
+      <text class="empty-text" wx:if="{{!searchKeyword}}">暂无剧本记录</text>
+      <text class="empty-text" wx:else>未找到相关剧本</text>
+      <text class="empty-desc" wx:if="{{!searchKeyword}}">快去参与拼车体验精彩剧本吧！</text>
+    </view>
+  </scroll-view>
+</view>

@@ -16,6 +16,7 @@ Page({
     this.loadCurrentCity();
     this.getSystemInfo();
     this.loadUserInfo();
+    // this.loadAuthStatus();
   },
 
   // 加载当前城市
@@ -35,6 +36,7 @@ Page({
 
   onShow() {
     this.loadUserInfo();
+    // this.loadAuthStatus();
   },
 
   // 获取系统信息
@@ -56,65 +58,63 @@ Page({
   loadUserInfo() {
     const userInfo = app.globalData.userInfo;
     if (userInfo) {
+      // 确保有金币数据
+      if (typeof userInfo.coins === 'undefined') {
+        userInfo.coins = 1000;
+      }
+      // 从 storage 中获取最新的金币数
+      const storedUserInfo = wx.getStorageSync('userInfo');
+      if (storedUserInfo && storedUserInfo.coins) {
+        userInfo.coins = storedUserInfo.coins;
+      }
       this.setData({ userInfo });
     } else {
-      this.setData({ userInfo: null });
+      // 即使没有登录，也显示默认金币数
+      this.setData({
+        userInfo: {
+          nickname: '未登录',
+          avatarUrl: '/images/default-avatar.png',
+          coins: 1000
+        }
+      });
     }
+  },
+
+  // 加载认证状态
+  loadAuthStatus() {
+    const authInfo = wx.getStorageSync('realNameAuth');
+    this.setData({
+      isAuthenticated: !!authInfo
+    });
   },
 
   // 编辑个人信息
   editPersonalInfo() {
-    const userInfo = app.globalData.userInfo;
-    if (userInfo) {
-      wx.showToast({
-        title: '编辑个人信息',
-        icon: 'none'
-      });
-      // 跳转到编辑个人信息页面
-      // wx.navigateTo({
-      //   url: '/pages/edit-profile/edit-profile'
-      // });
-    } else {
-      wx.showToast({
-        title: '请先登录',
-        icon: 'none'
-      });
-    }
+    wx.navigateTo({
+      url: '/pages/personal-settings/personal-settings'
+    });
   },
 
   // 跳转页面
   goToPage(e) {
     const page = e.currentTarget.dataset.page;
-    const pages = {
-      'system-notification': '系统通知',
-      'group-notification': '组局通知',
-      'wallet-order': '钱包订单',
-      'script-record': '我的剧本记录',
-      'real-name-auth': '个人实名认证'
-    };
 
-    wx.showToast({
-      title: pages[page],
-      icon: 'none'
-    });
-
-    // 这里可以根据不同的页面进行跳转
-    // switch(page) {
-    //   case 'system-notification':
-    //     wx.navigateTo({ url: '/pages/system-notification/system-notification' });
-    //     break;
-    //   case 'group-notification':
-    //     wx.navigateTo({ url: '/pages/group-notification/group-notification' });
-    //     break;
-    //   case 'wallet-order':
-    //     wx.navigateTo({ url: '/pages/wallet-order/wallet-order' });
-    //     break;
-    //   case 'script-record':
-    //     wx.navigateTo({ url: '/pages/script-record/script-record' });
-    //     break;
-    //   case 'real-name-auth':
-    //     wx.navigateTo({ url: '/pages/real-name-auth/real-name-auth' });
-    //     break;
-    // }
+    switch(page) {
+      case 'system-notification':
+        wx.showToast({ title: '系统通知', icon: 'none' });
+        break;
+      case 'group-notification':
+        wx.showToast({ title: '组局通知', icon: 'none' });
+        break;
+      case 'wallet-order':
+        wx.navigateTo({ url: '/pages/wallet-order/wallet-order' });
+        break;
+      case 'script-record':
+        wx.navigateTo({ url: '/pages/script-record/script-record' });
+        break;
+      case 'real-name-auth':
+        wx.navigateTo({ url: '/pages/real-name-auth/real-name-auth' });
+        break;
+    }
   }
 })

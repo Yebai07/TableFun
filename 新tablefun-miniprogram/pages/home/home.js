@@ -126,9 +126,10 @@ Page({
     dateOptions: [],
     scriptTypes: ['恐怖', '推理', '悬疑', '古风', '欧式', '科幻', '情感', '欢乐', '日式', '都市', '热血', '韩式', '惊悚', '暗黑'],
     sortOptions: [
+      { label: '综合排序', value: 'comprehensive' },
+      { label: '离我最近', value: 'distance' },
       { label: '热度排序', value: 'hot' },
       { label: '评分排序', value: 'rating' },
-      { label: '时间排序', value: 'time' },
       { label: '价格排序', value: 'price' },
       { label: '人数排序', value: 'players' }
     ],
@@ -194,6 +195,7 @@ Page({
         isSpecial: true,
         isUrgent: false,
         isFull: false,
+        distance: '1.5km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '14:00', needed: 2 },
           { location: '海淀区', date: '明天', time: '19:00', needed: 3 }
@@ -213,6 +215,7 @@ Page({
         isSpecial: false,
         isUrgent: true,
         isFull: false,
+        distance: '2.3km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '20:00', needed: 1, distance: '2.3km' },
           { location: '海淀区', date: '后天', time: '15:00', needed: 4, distance: '5.1km' }
@@ -232,6 +235,7 @@ Page({
         isSpecial: false,
         isUrgent: false,
         isFull: true,
+        distance: '0.8km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '13:00', needed: 1, distance: '1.8km' }
         ]
@@ -250,6 +254,7 @@ Page({
         isSpecial: true,
         isUrgent: false,
         isFull: false,
+        distance: '3.5km',
         carpoolRecords: [
           { location: '朝阳区', date: '明天', time: '18:00', needed: 2, distance: '3.5km' },
           { location: '海淀区', date: '周末', time: '14:00', needed: 3, distance: '4.2km' }
@@ -269,6 +274,7 @@ Page({
         isSpecial: false,
         isUrgent: true,
         isFull: false,
+        distance: '2.7km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '16:00', needed: 2, distance: '2.7km' }
         ]
@@ -287,6 +293,7 @@ Page({
         isSpecial: false,
         isUrgent: false,
         isFull: false,
+        distance: '6.8km',
         carpoolRecords: [
           { location: '朝阳区', date: '明天', time: '19:30', needed: 3, distance: '6.8km' },
           { location: '海淀区', date: '后天', time: '14:00', needed: 2, distance: '5.4km' }
@@ -306,6 +313,7 @@ Page({
         isSpecial: true,
         isUrgent: false,
         isFull: false,
+        distance: '3.2km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '15:00', needed: 2, distance: '3.2km' }
         ]
@@ -324,6 +332,7 @@ Page({
         isSpecial: false,
         isUrgent: true,
         isFull: true,
+        distance: '4.5km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '18:00', needed: 1, distance: '4.5km' },
           { location: '海淀区', date: '明天', time: '20:00', needed: 1, distance: '6.2km' }
@@ -343,6 +352,7 @@ Page({
         isSpecial: false,
         isUrgent: false,
         isFull: false,
+        distance: '7.1km',
         carpoolRecords: [
           { location: '朝阳区', date: '后天', time: '16:00', needed: 3, distance: '7.1km' }
         ]
@@ -361,6 +371,7 @@ Page({
         isSpecial: true,
         isUrgent: false,
         isFull: false,
+        distance: '2.9km',
         carpoolRecords: [
           { location: '朝阳区', date: '今天', time: '19:00', needed: 2, distance: '2.9km' },
           { location: '海淀区', date: '周末', time: '14:00', needed: 3, distance: '5.7km' }
@@ -408,6 +419,7 @@ Page({
         level: 3,
         exp: 250,
         coins: 1000,
+        tags: ['新用户'],
         createTime: new Date().getTime()
       };
       app.setUserInfo(mockUserInfo);
@@ -528,30 +540,83 @@ Page({
 
   // 根据坐标获取位置信息
   getLocationByCoordinate(lat, lng) {
-    // 这里使用模拟数据,实际项目中需要调用地图API
-    const mockCityMap = {
-      '39.9': '北京',
-      '31.2': '上海',
-      '23.1': '广州',
-      '22.5': '深圳',
-      '30.6': '成都'
+    // 简化版定位，直接使用定位的城市（如果需要精确城市，建议申请腾讯地图SDK）
+    // 这里使用中国主要城市的大致坐标来模拟
+    const cityMap = {
+      // 华北
+      '北京': { lat: 39.90, lng: 116.40 },
+      '天津': { lat: 39.13, lng: 117.20 },
+      '石家庄': { lat: 38.04, lng: 114.51 },
+      // 华东
+      '上海': { lat: 31.23, lng: 121.47 },
+      '南京': { lat: 32.06, lng: 118.78 },
+      '杭州': { lat: 30.27, lng: 120.15 },
+      '济南': { lat: 36.67, lng: 117.00 },
+      '合肥': { lat: 31.86, lng: 117.27 },
+      '南昌': { lat: 28.68, lng: 115.89 },
+      '福州': { lat: 26.07, lng: 119.30 },
+      '厦门': { lat: 24.48, lng: 118.10 },
+      // 华南
+      '广州': { lat: 23.13, lng: 113.27 },
+      '深圳': { lat: 22.54, lng: 114.06 },
+      '南宁': { lat: 22.82, lng: 108.32 },
+      '海口': { lat: 20.04, lng: 110.32 },
+      // 华中
+      '武汉': { lat: 30.59, lng: 114.31 },
+      '长沙': { lat: 28.23, lng: 112.94 },
+      '郑州': { lat: 34.76, lng: 113.65 },
+      // 西南
+      '重庆': { lat: 29.56, lng: 106.55 },
+      '成都': { lat: 30.67, lng: 104.06 },
+      '贵阳': { lat: 26.65, lng: 106.63 },
+      '昆明': { lat: 25.04, lng: 102.71 },
+      '拉萨': { lat: 29.65, lng: 91.10 },
+      // 西北
+      '西安': { lat: 34.27, lng: 108.95 },
+      '兰州': { lat: 36.06, lng: 103.84 },
+      '西宁': { lat: 36.62, lng: 101.77 },
+      '银川': { lat: 38.49, lng: 106.23 },
+      '乌鲁木齐': { lat: 43.82, lng: 87.62 },
+      // 东北
+      '沈阳': { lat: 41.80, lng: 123.43 },
+      '大连': { lat: 38.91, lng: 121.62 },
+      '长春': { lat: 43.88, lng: 125.32 },
+      '哈尔滨': { lat: 45.80, lng: 126.53 }
     };
 
-    // 根据纬度判断城市(模拟)
-    const latPrefix = Math.floor(lat * 10) / 10;
-    const city = mockCityMap[latPrefix] || '北京';
+    // 找到距离最近的城市
+    let minDistance = Infinity;
+    let cityName = '北京'; // 默认城市
 
+    // 使用传统的for循环，避免Object.entries兼容性问题
+    for (const city in cityMap) {
+      const coords = cityMap[city];
+      const distance = Math.sqrt(
+        Math.pow(lat - coords.lat, 2) +
+        Math.pow(lng - coords.lng, 2)
+      );
+      if (distance < minDistance) {
+        minDistance = distance;
+        cityName = city;
+      }
+    }
+
+    // 设置当前城市
     this.setData({
-      currentCity: city
+      currentCity: cityName
     });
 
-    // 加载对应城市的区域数据
-    this.loadDistricts(city);
+    // 保存到全局数据
+    const app = getApp();
+    app.globalData.currentCity = cityName;
+    app.globalData.currentLocation = { latitude: lat, longitude: lng };
 
-    // 更新导航栏标题
-    wx.setNavigationBarTitle({
-      title: city + ' ▼'
-    });
+    // 加载该城市的区域数据
+    this.loadDistricts(cityName);
+
+    // 保存到本地存储
+    wx.setStorageSync('currentCity', cityName);
+    wx.setStorageSync('currentLocation', { latitude: lat, longitude: lng });
   },
 
   // 加载城市区域数据
@@ -815,7 +880,7 @@ Page({
       selectedSortLabel: sortLabel,
       showSortModal: false
     });
-    this.sortRooms();
+    this.filterRooms();
   },
 
   // 城市选择（用于区域模式）
@@ -888,6 +953,20 @@ Page({
       filtered.sort((a, b) => a.price - b.price);
     } else if (this.data.selectedSort === 'players') {
       filtered.sort((a, b) => a.playerCount - b.playerCount);
+    } else if (this.data.selectedSort === 'comprehensive') {
+      // 综合排序：结合评分、热度等多个因素
+      filtered.sort((a, b) => {
+        const scoreA = a.rating * 1000 + a.playCount * 0.1;
+        const scoreB = b.rating * 1000 + b.playCount * 0.1;
+        return scoreB - scoreA;
+      });
+    } else if (this.data.selectedSort === 'distance') {
+      // 离我最近：如果有距离数据则按距离排序，否则按评分排序
+      filtered.sort((a, b) => {
+        const distanceA = a.distance ? parseFloat(a.distance) : 99999;
+        const distanceB = b.distance ? parseFloat(b.distance) : 99999;
+        return distanceA - distanceB;
+      });
     }
 
     this.setData({
@@ -990,15 +1069,141 @@ Page({
     });
   },
 
+  // 跳转到剧本详情页面
+  goToScriptDetail(e) {
+    const scriptId = e.currentTarget.dataset.id;
+    wx.navigateTo({
+      url: `/pages/script-detail/script-detail?id=${scriptId}`
+    });
+  },
+
+  // 确认加入房间
+  confirmJoinRoom(e) {
+    const roomId = e.currentTarget.dataset.id;
+    this.joinRoom(roomId);
+  },
+
   // 加入房间
   joinRoom(roomId) {
-    wx.showLoading({ title: '加入中...' });
+    // 查找剧本信息
+    const script = this.data.filteredScripts.length > 0
+      ? this.data.filteredScripts.find(s => s.id === roomId)
+      : this.data.recommendScripts.find(s => s.id === roomId);
 
-    setTimeout(() => {
-      wx.hideLoading();
-      wx.navigateTo({
-        url: `/pages/room/room?roomId=${roomId}`
+    if (!script) {
+      wx.showToast({
+        title: '剧本不存在',
+        icon: 'none'
       });
-    }, 1000);
+      return;
+    }
+
+    const app = getApp();
+    const currentCoins = app.getCoins();
+
+    // 显示确认弹窗
+    wx.showModal({
+      title: '确认参与拼车',
+      content: `您是否确认参与拼车此剧本《${script.name}》？\n\n当前金币：${currentCoins}`,
+      confirmText: '确认',
+      cancelText: '取消',
+      confirmColor: '#4CAF50',
+      success: (res) => {
+        if (res.confirm) {
+          // 检查金币是否足够
+          if (currentCoins < script.price) {
+            wx.showModal({
+              title: '金币不足',
+              content: `您的金币不足！\n需要：${script.price}金币\n当前：${currentCoins}金币`,
+              showCancel: false,
+              confirmText: '知道了'
+            });
+            return;
+          }
+
+          // 扣除金币
+          const success = app.reduceCoins(script.price);
+          if (!success) {
+            wx.showToast({
+              title: '扣除金币失败',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 用户点击确认
+          wx.showLoading({ title: '加入中...' });
+
+          setTimeout(() => {
+            wx.hideLoading();
+
+            // 保存剧本记录
+            this.saveScriptRecord(script, script.price);
+
+            // 保存交易记录
+            this.saveTransaction(script.name, script.price, 'expense');
+
+            wx.showToast({
+              title: `加入成功！消耗${script.price}金币`,
+              icon: 'success',
+              duration: 2000
+            });
+
+            // 跳转到房间详情页
+            wx.navigateTo({
+              url: `/pages/room/room?roomId=${roomId}`
+            });
+          }, 1000);
+        } else {
+          // 用户点击取消
+          wx.showToast({
+            title: '已取消加入',
+            icon: 'none'
+          });
+        }
+      }
+    });
+  },
+
+  // 保存剧本记录
+  saveScriptRecord(script, cost) {
+    const records = wx.getStorageSync('scriptRecords') || [];
+    const newRecord = {
+      id: Date.now(),
+      scriptId: script.id,
+      name: script.name,
+      type: script.type,
+      difficulty: script.difficulty,
+      playerCount: script.playerCount,
+      cover: script.cover,
+      cost: cost,
+      playTime: this.formatTime(new Date())
+    };
+    records.unshift(newRecord);
+    wx.setStorageSync('scriptRecords', records);
+  },
+
+  // 保存交易记录
+  saveTransaction(scriptName, amount, type) {
+    const transactions = wx.getStorageSync('transactions') || [];
+    const newTransaction = {
+      id: Date.now(),
+      name: type === 'expense' ? `参与剧本《${scriptName}》` : '充值',
+      amount: amount,
+      type: type,
+      time: this.formatTime(new Date())
+    };
+    transactions.unshift(newTransaction);
+    wx.setStorageSync('transactions', transactions);
+  },
+
+  // 格式化时间
+  formatTime(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}`;
   }
 })

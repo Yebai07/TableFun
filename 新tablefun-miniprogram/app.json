@@ -7,7 +7,11 @@
     "pages/create-room/create-room",
     "pages/room/room",
     "pages/my-scripts/my-scripts",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/wallet-order/wallet-order",
+    "pages/real-name-auth/real-name-auth",
+    "pages/script-record/script-record",
+    "pages/personal-settings/personal-settings"
   ],
   "window": {
     "backgroundTextStyle": "dark",

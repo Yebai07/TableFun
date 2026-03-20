@@ -138,7 +138,7 @@ Page({
           {
             id: 1,
             nickname: '情感本爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '太感人了！姐妹情刻画得很深刻，哭了好几次~',
             time: '3天前',
@@ -321,7 +321,7 @@ Page({
           {
             id: 1,
             nickname: '恋综爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '太浪漫了！恋综设定很新鲜，结局走向很自由~',
             time: '3天前',
@@ -502,7 +502,7 @@ Page({
           {
             id: 1,
             nickname: '校园推理控',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '校园冒险题材很吸引人！逃脱设计很刺激！',
             time: '3天前',
@@ -687,7 +687,7 @@ Page({
           {
             id: 1,
             nickname: '幻想推理控',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '架空世界观设定很有趣！侦探题材很吸引人！',
             time: '3天前',
@@ -809,7 +809,7 @@ Page({
           {
             id: 1,
             nickname: '硬核推理控',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '硬核诡计流！多重解答设计得太精彩了！',
             time: '3天前',
@@ -931,7 +931,7 @@ Page({
           {
             id: 1,
             nickname: '克苏鲁爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '克苏鲁题材很吸引人！多元文明设定很棒！',
             time: '3天前',
@@ -1053,7 +1053,7 @@ Page({
           {
             id: 1,
             nickname: '权谋爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '多线叙事设计得很巧妙！反转不断！',
             time: '3天前',
@@ -1175,7 +1175,7 @@ Page({
           {
             id: 1,
             nickname: '古风权谋控',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '皇权更迭设定很吸引人！爱恨纠葛很深刻！',
             time: '3天前',
@@ -1298,7 +1298,7 @@ Page({
           {
             id: 1,
             nickname: '机制本爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '赌场题材很新鲜！十余种机制很有趣！',
             time: '3天前',
@@ -1420,7 +1420,7 @@ Page({
           {
             id: 1,
             nickname: '科幻控',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '赛博朋克设定很吸引人！VR游戏体验很棒！',
             time: '3天前',
@@ -1543,7 +1543,7 @@ Page({
           {
             id: 1,
             nickname: '惊悚爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '藏神村设定很吸引人！沉浸演绎很棒！',
             time: '3天前',
@@ -1665,7 +1665,7 @@ Page({
           {
             id: 1,
             nickname: '哲学推理控',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '多元世界设定很吸引人！哲学思考很深刻！',
             time: '3天前',
@@ -1787,7 +1787,7 @@ Page({
           {
             id: 1,
             nickname: '江湖爱好者',
-            avatar: '/images/avatar4.png',
+            avatar: '/images/default-avatar.png',
             rating: 5,
             content: '江湖武林设定很吸引人！少年成长很感人！',
             time: '3天前',
@@ -2003,17 +2003,116 @@ Page({
   // 加入拼车
   joinCarpool(e) {
     const carpoolId = e.currentTarget.dataset.id;
-    wx.showToast({
-      title: '正在加入拼车...',
-      icon: 'loading'
-    });
-    // 这里可以调用加入拼车的接口
-    setTimeout(() => {
+    const app = getApp();
+    const currentCoins = app.getCoins();
+
+    // 查找拼车信息
+    const carpool = this.data.carpoolRecords.find(c => c.id === carpoolId);
+    if (!carpool) {
       wx.showToast({
-        title: '加入成功',
-        icon: 'success'
+        title: '拼车信息不存在',
+        icon: 'none'
       });
-    }, 1000);
+      return;
+    }
+
+    // 显示确认弹窗
+    wx.showModal({
+      title: '确认参与拼车',
+      content: `您是否确认参与拼车此剧本《${this.data.script.name}》？\n\n当前金币：${currentCoins}`,
+      confirmText: '确认',
+      cancelText: '取消',
+      confirmColor: '#4CAF50',
+      success: (res) => {
+        if (res.confirm) {
+          // 检查金币是否足够
+          const scriptPrice = this.data.script.isFree ? 0 : this.data.script.price;
+          if (currentCoins < scriptPrice) {
+            wx.showModal({
+              title: '金币不足',
+              content: `您的金币不足！\n需要：${scriptPrice}金币\n当前：${currentCoins}金币`,
+              showCancel: false,
+              confirmText: '知道了'
+            });
+            return;
+          }
+
+          // 扣除金币
+          const success = app.reduceCoins(scriptPrice);
+          if (!success) {
+            wx.showToast({
+              title: '金币扣除失败',
+              icon: 'none'
+            });
+            return;
+          }
+
+          // 调用加入拼车的接口
+          wx.showToast({
+            title: '正在加入拼车...',
+            icon: 'loading'
+          });
+
+          setTimeout(() => {
+            wx.hideLoading();
+
+            // 保存剧本记录
+            this.saveScriptRecord(this.data.script, scriptPrice);
+
+            // 保存交易记录
+            this.saveTransaction(this.data.script.name, scriptPrice, 'expense');
+
+            wx.showToast({
+              title: `加入成功！消耗${scriptPrice}金币`,
+              icon: 'success',
+              duration: 2000
+            });
+          }, 1000);
+        }
+      }
+    });
+  },
+
+  // 保存剧本记录
+  saveScriptRecord(script, cost) {
+    const records = wx.getStorageSync('scriptRecords') || [];
+    const newRecord = {
+      id: Date.now(),
+      scriptId: script.id,
+      name: script.name,
+      type: script.type,
+      difficulty: script.difficulty,
+      playerCount: script.playerCount,
+      cover: script.cover,
+      cost: cost,
+      playTime: this.formatTime(new Date())
+    };
+    records.unshift(newRecord);
+    wx.setStorageSync('scriptRecords', records);
+  },
+
+  // 保存交易记录
+  saveTransaction(scriptName, amount, type) {
+    const transactions = wx.getStorageSync('transactions') || [];
+    const newTransaction = {
+      id: Date.now(),
+      name: type === 'expense' ? `参与剧本《${scriptName}》` : '充值',
+      amount: amount,
+      type: type,
+      time: this.formatTime(new Date())
+    };
+    transactions.unshift(newTransaction);
+    wx.setStorageSync('transactions', transactions);
+  },
+
+  // 格式化时间
+  formatTime(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hour = String(date.getHours()).padStart(2, '0');
+    const minute = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day} ${hour}:${minute}`;
   },
 
   // 分享剧本

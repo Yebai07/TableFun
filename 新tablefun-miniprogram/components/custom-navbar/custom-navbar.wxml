@@ -6,10 +6,13 @@
   </view>
 
   <!-- 左侧城市选择 -->
-  <view class="nav-left" wx:else bindtap="onCityTap">
+  <view class="nav-left" wx:elif="{{city && city !== ''}}" bindtap="onCityTap">
     <text class="city-text">{{city}}</text>
-    <text class="city-arrow">▼</text>
+    <text class="city-arrow" wx:if="{{showArrow}}">▼</text>
   </view>
+
+  <!-- 左侧空占位 -->
+  <view class="nav-left" wx:else></view>
 
   <!-- 中间标题 -->
   <view class="nav-center">

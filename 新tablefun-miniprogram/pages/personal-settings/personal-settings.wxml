@@ -1,0 +1,76 @@
+<!--pages/personal-settings/personal-settings.wxml-->
+<view class="settings-container" style="padding-top: {{statusBarHeight + navBarHeight}}px;">
+  <!-- 自定义导航栏 -->
+  <custom-navbar title="个人设置" showBack="{{true}}" bind:backtap="onBackTap" />
+
+  <!-- 头像设置 -->
+  <view class="setting-section">
+    <view class="section-title">头像</view>
+    <view class="setting-item" bindtap="chooseAvatar">
+      <view class="item-content">
+        <image class="current-avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill" />
+        <text class="item-label">点击更换头像</text>
+      </view>
+      <text class="item-arrow">→</text>
+    </view>
+  </view>
+
+  <!-- 昵称设置 -->
+  <view class="setting-section">
+    <view class="section-title">昵称</view>
+    <view class="setting-item" bindtap="editNickname">
+      <view class="item-content">
+        <text class="item-value">{{userInfo.nickname || '未设置'}}</text>
+      </view>
+      <text class="item-arrow">→</text>
+    </view>
+  </view>
+
+  <!-- 性别设置 -->
+  <view class="setting-section">
+    <view class="section-title">性别</view>
+    <view class="setting-item" bindtap="editGender">
+      <view class="item-content">
+        <text class="item-value">{{genderText}}</text>
+      </view>
+      <text class="item-arrow">→</text>
+    </view>
+  </view>
+
+  <!-- 个性签名 -->
+  <view class="setting-section">
+    <view class="section-title">个性签名</view>
+    <view class="setting-item" bindtap="editSignature">
+      <view class="item-content">
+        <text class="item-value signature-value">{{userInfo.signature || '暂无个性签名'}}</text>
+      </view>
+      <text class="item-arrow">→</text>
+    </view>
+  </view>
+
+  <!-- 保存按钮 -->
+  <view class="save-btn-container">
+    <button class="save-btn" bindtap="saveSettings">保存修改</button>
+  </view>
+</view>
+
+<!-- 性别选择弹窗 -->
+<view class="modal-overlay" wx:if="{{showGenderModal}}" bindtap="closeGenderModal">
+  <view class="modal-content" catchtap="stopPropagation">
+    <view class="modal-title">选择性别</view>
+    <view class="gender-options">
+      <view class="gender-option {{userInfo.gender === 1 ? 'selected' : ''}}" bindtap="selectGender" data-gender="1">
+        <text class="gender-icon">👨</text>
+        <text class="gender-label">男</text>
+      </view>
+      <view class="gender-option {{userInfo.gender === 2 ? 'selected' : ''}}" bindtap="selectGender" data-gender="2">
+        <text class="gender-icon">👩</text>
+        <text class="gender-label">女</text>
+      </view>
+    </view>
+    <view class="modal-buttons">
+      <button class="modal-btn cancel-btn" bindtap="closeGenderModal">取消</button>
+      <button class="modal-btn confirm-btn" bindtap="confirmGender">确定</button>
+    </view>
+  </view>
+</view>

@@ -4,12 +4,17 @@ Component({
     // 城市名称
     city: {
       type: String,
-      value: '北京'
+      value: ''
     },
     // 是否显示返回键
     showBack: {
       type: Boolean,
       value: false
+    },
+    // 是否显示下拉箭头
+    showArrow: {
+      type: Boolean,
+      value: true
     }
   },
 
@@ -38,9 +43,11 @@ Component({
 
   methods: {
     onCityTap() {
+      console.log('组件: 点击了城市');
       this.triggerEvent('citytap');
     },
     onBackTap() {
+      console.log('组件: 点击了返回键');
       this.triggerEvent('backtap');
     }
   }
