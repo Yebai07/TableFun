@@ -5,7 +5,27 @@ Page({
     script: {},
     isCollected: false
   },
-
+// 新增：找队友（私信邀玩）
+goToFindTeammate() {
+  const app = getApp();
+  if (!app.globalData.userInfo) {
+    wx.showModal({
+      title: '提示',
+      content: '请先登录',
+      showCancel: false,
+      success: () => {
+        wx.switchTab({
+          url: '/pages/profile/profile'
+        });
+      }
+    });
+    return;
+  }
+  const { script } = this.data;
+  wx.navigateTo({
+    url: `/pages/chat-list/chat-list?inviteType=script&inviteId=${script.id}&inviteName=${encodeURIComponent(script.name)}`
+  });
+},
   onLoad(options) {
     const scriptId = options.id;
     this.setData({ scriptId });

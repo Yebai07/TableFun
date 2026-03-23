@@ -1,0 +1,41 @@
+<!--pages/chat-room/chat-room.wxml-->
+<view class="chat-room-container">
+  
+
+  <!-- 聊天内容区 -->
+  <scroll-view class="chat-content" scroll-y scroll-top="{{scrollTop}}" bindscrolltolower="scrollToBottom">
+    <!-- 对方消息 -->
+    <view class="msg-item left" wx:for="{{chatRecords}}" wx:key="time" wx:if="{{item.sendId === targetUser.id}}">
+      <image class="msg-avatar" src="{{targetUser.avatarUrl}}" mode="aspectFill" />
+      <view class="msg-bubble left-bubble">
+        <text class="msg-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+        <view class="msg-invite" wx:if="{{item.type === 'invite'}}">
+          <text class="invite-label">【邀玩】</text>
+          <text class="invite-content">{{item.content}}</text>
+          <button class="accept-invite" bindtap="acceptInvite" data-info="{{item.inviteInfo}}">接受邀请</button>
+        </view>
+        <text class="msg-time">{{formatTime(item.time)}}</text>
+      </view>
+    </view>
+    <!-- 自己消息 -->
+    <view class="msg-item right" wx:for="{{chatRecords}}" wx:key="time" wx:if="{{item.sendId === userInfo.id}}">
+      <view class="msg-bubble right-bubble">
+        <text class="msg-text" wx:if="{{item.type === 'text'}}">{{item.content}}</text>
+        <view class="msg-invite right-invite" wx:if="{{item.type === 'invite'}}">
+          <text class="invite-label">【我发起的邀玩】</text>
+          <text class="invite-content">{{item.content}}</text>
+        </view>
+        <text class="msg-time">{{formatTime(item.time)}}</text>
+      </view>
+      <image class="msg-avatar" src="{{userInfo.avatarUrl}}" mode="aspectFill" />
+    </view>
+  </scroll-view>
+
+  <!-- 输入区 -->
+  <view class="input-area">
+    <input class="msg-input" placeholder="输入消息..." value="{{inputMsg}}" bindinput="onInputChange" />
+    <button class="send-btn" bindtap="sendTextMsg">发送</button>
+    <!-- 邀玩按钮（有邀玩参数时显示） -->
+    <button class="invite-btn" bindtap="sendInviteMsg" wx:if="{{inviteType && inviteId}}">发邀玩</button>
+  </view>
+</view>

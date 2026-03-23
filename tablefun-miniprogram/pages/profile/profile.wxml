@@ -68,6 +68,12 @@
 
     <!-- 功能列表 -->
     <view class="menu-list">
+       <!-- 新增：私信入口 -->
+  <view class="menu-item" bindtap="goToChatList">
+    <view class="menu-icon">💬</view>
+    <text class="menu-title">我的私信</text>
+    <text class="menu-arrow">→</text>
+  </view>
       <view class="menu-item" bindtap="goToPage" data-page="my-rooms">
         <view class="menu-icon">🏠</view>
         <text class="menu-title">我的房间</text>

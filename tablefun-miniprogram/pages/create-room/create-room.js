@@ -57,7 +57,29 @@ Page({
       }
     ]
   },
-
+// 新增：跳转到邀玩匹配（私信）
+goToInviteMatch() {
+  const app = getApp();
+  // 检查登录
+  if (!app.globalData.userInfo) {
+    wx.showModal({
+      title: '提示',
+      content: '请先登录',
+      showCancel: false,
+      success: () => {
+        wx.switchTab({
+          url: '/pages/profile/profile'
+        });
+      }
+    });
+    return;
+  }
+  const { selectedScript } = this.data;
+  // 跳转到私信列表，携带剧本邀玩参数
+  wx.navigateTo({
+    url: `/pages/chat-list/chat-list?inviteType=script&inviteId=${selectedScript.id}&inviteName=${encodeURIComponent(selectedScript.name)}`
+  });
+},
   onLoad(options) {
     // 如果从剧本详情页跳转过来，直接选择该剧本
     if (options.scriptId) {

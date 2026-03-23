@@ -15,7 +15,12 @@ Page({
     },
     levelPercent: 0
   },
-
+  // 新增：跳转到私信列表
+goToChatList() {
+  wx.navigateTo({
+    url: '/pages/chat-list/chat-list'
+  });
+},
   onLoad() {
     this.ensureLogin();
     this.loadUserInfo();

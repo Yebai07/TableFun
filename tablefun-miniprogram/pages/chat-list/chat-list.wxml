@@ -1,0 +1,55 @@
+<view class="chat-list-container">
+  <!-- 页面头部 -->
+  <view class="page-header">
+  <!-- 放大返回按钮区域 -->
+  <view class="back-btn" bindtap="goBack">
+    <text class="back-icon">←</text>
+  </view>
+  <view class="header-text">
+    <text class="header-title">私信</text>
+    <text class="header-desc">找队友·约剧本·聊玩法</text>
+  </view>
+</view>
+
+  <!-- 可邀请的队友列表（强制显示） -->
+  <view class="teammate-section">
+    <text class="section-title">可邀请的队友</text>
+    <scroll-view class="teammate-list" scroll-x>
+      <view class="teammate-item" wx:for="{{teammateList}}" wx:key="id" bindtap="goToChatRoom" data-user="{{item}}">
+        <text class="teammate-avatar-text">{{item.nickname.charAt(0)}}</text>
+        <text class="teammate-name">{{item.nickname}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 无会话状态提示 -->
+  <view class="no-data" wx:if="{{chatSessions.length === 0}}">
+    <text class="no-data-icon">💬</text>
+    <text class="no-data-text">暂无私信会话</text>
+    <text class="no-data-sub">点击上方队友，立即发起邀玩～</text>
+  </view>
+
+  <!-- 已有会话列表 -->
+  <scroll-view class="session-list" scroll-y wx:else>
+    <view class="session-item" wx:for="{{chatSessions}}" wx:key="targetUser.id" bindtap="goToChatRoom" data-user="{{item.targetUser}}">
+      <!-- 会话头像（无头像时显示文字） -->
+      <view class="session-avatar-wrap">
+        <text class="session-avatar-text" wx:if="{{!item.targetUser.avatarUrl}}">{{item.targetUser.nickname.charAt(0)}}</text>
+        <image class="session-avatar-img" wx:else src="{{item.targetUser.avatarUrl}}" mode="aspectFill" />
+      </view>
+      <!-- 会话信息 -->
+      <view class="session-info">
+        <view class="session-top">
+          <text class="user-name">{{item.targetUser.nickname}}</text>
+          <text class="msg-time">{{item.lastMsgTime}}</text>
+        </view>
+        <text class="last-msg" wx:if="{{item.lastMsgType === 'text'}}">{{item.lastMsg}}</text>
+        <text class="last-msg invite-msg" wx:if="{{item.lastMsgType === 'invite'}}">[邀玩] {{item.lastMsg}}</text>
+      </view>
+      <!-- 未读消息数 -->
+      <view class="unread-badge" wx:if="{{item.unreadCount > 0}}">{{item.unreadCount}}</view>
+      <!-- 删除按钮 -->
+      <view class="delete-btn" bindtap="deleteSession" data-id="{{item.targetUser.id}}" catchtap="stopPropagation">✕</view>
+    </view>
+  </scroll-view>
+</view>

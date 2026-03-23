@@ -4,7 +4,12 @@ App({
     userId: null,
     currentRoom: null,
     currentScript: null,
-    socketStatus: 'closed'
+    socketStatus: 'closed',
+    teammateList: [
+      { id: 'tm001', nickname: '剧本杀大神' }, // 删掉avatarUrl字段
+      { id: 'tm002', nickname: '新手求带飞' },
+      { id: 'tm003', nickname: '熬夜玩本选手' }
+    ]
   },
 
   onLaunch() {

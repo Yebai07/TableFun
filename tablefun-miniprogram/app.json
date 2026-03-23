@@ -1,12 +1,14 @@
 {
   "pages": [
+    "pages/chat-list/chat-list",
+    "pages/chat-room/chat-room",
     "pages/home/home",
     "pages/script-list/script-list",
     "pages/script-detail/script-detail",
     "pages/create-room/create-room",
     "pages/room/room",
     "pages/my-scripts/my-scripts",
-    "pages/profile/profile"
+    "pages/profile/profile" 
   ],
   "window": {
     "backgroundTextStyle": "dark",

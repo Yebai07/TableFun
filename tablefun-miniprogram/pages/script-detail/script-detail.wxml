@@ -106,5 +106,6 @@
     <button class="action-btn primary" bindtap="createRoom">
       创建房间
     </button>
+    <button class="btn-find-teammate" bindtap="goToFindTeammate">找队友 · 私信邀玩</button>
   </view>
 </view>

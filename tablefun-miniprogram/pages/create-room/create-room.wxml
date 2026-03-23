@@ -88,7 +88,12 @@
       </view>
     </view>
   </view>
-
+  <!-- 新增：邀玩匹配按钮 -->
+<view class="invite-btn-container">
+  <button class="btn-invite" bindtap="goToInviteMatch" wx:if="{{selectedScript.name}}">
+    邀玩匹配 · 找队友
+  </button>
+</view>
   <!-- 创建按钮 -->
   <view class="create-btn-container">
     <button class="btn-create" bindtap="createRoom" disabled="{{!selectedScript.name}}">

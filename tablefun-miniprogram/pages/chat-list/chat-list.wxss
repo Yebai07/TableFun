@@ -1,0 +1,172 @@
+.chat-list-container {
+  min-height: 100vh;
+  background-color: #1a1a2e;
+  padding-bottom: 20rpx;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  padding: 40rpx 30rpx 30rpx;
+}
+.back-btn {
+  width: 80rpx;   /* 扩大点击区域 */
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1); /* 加半透背景，更易识别 */
+}
+.back-icon {
+  font-size: 40rpx;
+  color: #fff;
+}
+.header-text {
+  flex: 1;
+  text-align: center;
+}
+.header-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 8rpx;
+}
+.header-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 队友列表样式（必加） */
+.teammate-section {
+  padding: 0 30rpx 20rpx;
+}
+.section-title {
+  font-size: 28rpx;
+  color: #fff;
+  margin-bottom: 20rpx;
+  display: block;
+}
+.teammate-list {
+  white-space: nowrap;
+}
+.teammate-item {
+  display: inline-block;
+  width: 120rpx;
+  text-align: center;
+  margin-right: 30rpx;
+}
+.teammate-avatar-text {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: #e84545;
+  color: #fff;
+  font-size: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8rpx;
+}
+.teammate-name {
+  font-size: 24rpx;
+  color: #fff;
+}
+
+/* 无数据样式 */
+.no-data {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 50rpx 30rpx;
+  gap: 24rpx;
+}
+.no-data-icon {
+  font-size: 120rpx;
+  opacity: 0.3;
+}
+.no-data-text {
+  font-size: 32rpx;
+  color: #fff;
+}
+.no-data-sub {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 会话列表样式 */
+.session-list {
+  height: calc(100vh - 300rpx);
+  padding: 0 30rpx;
+}
+.session-item {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+.session-avatar {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  margin-right: 24rpx;
+}
+.session-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+.session-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.user-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #fff;
+}
+.msg-time {
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.4);
+}
+.last-msg {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.invite-msg {
+  color: #e84545;
+}
+.unread-badge {
+  min-width: 40rpx;
+  height: 40rpx;
+  background: #e84545;
+  border-radius: 20rpx;
+  color: #fff;
+  font-size: 24rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 16rpx;
+}
+.delete-btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 32rpx;
+  color: rgba(255, 255, 255, 0.4);
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
