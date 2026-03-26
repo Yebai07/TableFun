@@ -1,7 +1,6 @@
 <view class="page-container">
   
   <view class="sticky-header">
-    
     <view class="search-box">
       <icon type="search" size="16" color="#999"></icon>
       <input class="search-input" placeholder="搜索剧本名称..." value="{{searchKeyword}}" bindinput="onSearchInput" />
@@ -17,11 +16,10 @@
       </picker>
 
       <view class="filter-item" bindtap="toggleTimeSort">
-        <text class="filter-text">发车时间</text>
-        <text class="icon-sort">{{timeSortAsc ? '↑ ' : '↓ '}}</text>
+        <text class="filter-text">开始时间</text>
+        <text class="icon-sort">{{timeSortAsc ? '↑' : '↓'}}</text>
       </view>
     </view>
-    
   </view>
 
   <view class="loading-state" wx:if="{{isLoading}}">加载中...</view>
@@ -34,16 +32,22 @@
     <block wx:for="{{teamupList}}" wx:key="_id">
       <view class="teamup-card">
         <view class="card-header">
-          <text class="time-text">🕒 发车：{{item.startTime}}</text>
-          <text class="status-tag">招募中</text>
+          <text class="time-text">🕒 开始：{{item.startTime}}</text>
+          
+          <text class="status-tag locked" wx:if="{{item.isLocked}}">已锁定</text>
         </view>
         
         <view class="script-info">
           <image class="script-cover" src="{{item.bannerUrl}}" mode="aspectFill"></image>
           <view class="script-text">
             <text class="script-title">{{item.scriptTitle}}</text>
-            <text class="lock-rule">🔒 {{item.lockRule}}</text>
-            <text class="notes" wx:if="{{item.merchantNotes}}">备注: {{item.merchantNotes}}</text>
+            
+            <view class="script-tags">
+              <text class="tag-type" wx:if="{{item.scriptType}}">{{item.scriptType}}</text>
+              <text class="tag-players" wx:if="{{item.scriptPlayers}}">{{item.scriptPlayers}}</text>
+            </view>
+
+            <text class="lock-rule">🔒 {{item.displayLockRule}}</text>
           </view>
         </view>
 
@@ -54,6 +58,7 @@
           </view>
           <button class="btn-join" bindtap="viewTeamup" data-id="{{item._id}}">查看详情</button>
         </view>
+        
       </view>
     </block>
   </view>

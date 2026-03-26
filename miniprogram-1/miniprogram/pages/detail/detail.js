@@ -66,6 +66,7 @@ Page({
         scriptTitle: scriptInfo.title,
         bannerUrl: scriptInfo.bannerUrl, // 冗余图片给大厅展示用
         scriptType: scriptInfo.type,
+        scriptPlayers: scriptInfo.players,
         targetPlayers: targetNum,
         currentPlayers: 1,
         status: "recruiting",

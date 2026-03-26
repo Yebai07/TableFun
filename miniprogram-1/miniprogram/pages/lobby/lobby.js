@@ -6,7 +6,7 @@ Page({
     teamupList: [], 
     isLoading: true,
 
-    searchKeyword: '', // 新增：搜索关键词
+    searchKeyword: '',
     typeOptions: ['全部', '情感', '推理', '欢乐', '机制', '惊悚'],
     currentType: '全部',
     timeSortAsc: true 
@@ -37,13 +37,11 @@ Page({
     })
   },
 
-  // ===== 新增：搜索框输入事件 =====
   onSearchInput(e) {
     this.setData({ searchKeyword: e.detail.value });
-    this.processData(); // 每次输入一个字，都会瞬间过滤
+    this.processData();
   },
 
-  // ===== 新增：清空搜索框 =====
   clearSearch() {
     this.setData({ searchKeyword: '' });
     this.processData();
@@ -60,13 +58,10 @@ Page({
     this.processData(); 
   },
 
-  /**
-   * 核心处理器升级：包含 搜索 + 筛选 + 排序 的三重过滤
-   */
   processData() {
     let list = [...this.data.allTeamups]; 
 
-    // 1. 剧本名称模糊搜索 (新增逻辑)
+    // 1. 模糊搜索
     if (this.data.searchKeyword.trim() !== '') {
       const keyword = this.data.searchKeyword.trim();
       list = list.filter(item => 
@@ -74,18 +69,51 @@ Page({
       );
     }
 
-    // 2. 剧本类型筛选
+    // 2. 类型筛选
     if (this.data.currentType !== '全部') {
       list = list.filter(item => 
         item.scriptType && item.scriptType.includes(this.data.currentType)
       );
     }
 
-    // 3. 发车时间排序
+    // 3. 时间排序
     list.sort((a, b) => {
       let timeA = new Date(a.startTime.replace(/-/g, '/')).getTime() || 0;
       let timeB = new Date(b.startTime.replace(/-/g, '/')).getTime() || 0;
       return this.data.timeSortAsc ? (timeA - timeB) : (timeB - timeA);
+    });
+
+    // 4. 计算是否已锁定 & 文案无痕替换
+    const now = new Date().getTime(); // 获取用户当前的现实时间戳
+
+    list = list.map(item => {
+      let isLocked = false;
+      let startTimestamp = new Date(item.startTime.replace(/-/g, '/')).getTime();
+
+      if (item.lockRule) {
+        if (item.lockRule.includes('不限')) {
+          isLocked = false;
+        } else if (item.lockRule.includes('即锁')) {
+          // 如果是“开始即锁”，比较当前时间是否大于等于发车时间
+          isLocked = now >= startTimestamp;
+        } else {
+          // 用正则提取出“前12小时”里的数字 12
+          const match = item.lockRule.match(/前(\d+)小时/);
+          if (match && match[1]) {
+            const hours = parseInt(match[1], 10);
+            // 计算出锁车的具体时间戳 (发车时间 - 规定小时数的毫秒值)
+            const lockTimestamp = startTimestamp - (hours * 60 * 60 * 1000);
+            // 如果当前时间已经超过了锁车时间，则标记为已锁定
+            isLocked = now >= lockTimestamp;
+          }
+        }
+      }
+
+      return {
+        ...item,
+        displayLockRule: item.lockRule ? item.lockRule.replace(/发车/g, '开始') : '',
+        isLocked: isLocked // 将计算结果新增为一个字段，供 wxml 使用
+      };
     });
 
     this.setData({ teamupList: list, isLoading: false });
