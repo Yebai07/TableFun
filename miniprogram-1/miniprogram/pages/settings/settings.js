@@ -24,8 +24,10 @@ Page({
       content: '确定要退出登录吗？',
       success: (res) => {
         if (res.confirm) {
-          // 清除本地存储的用户信息
+          // 清除本地存储的用户信息和缓存
           wx.removeStorageSync('userInfo');
+          wx.removeStorageSync('cachedUserInfo');
+          wx.removeStorageSync('loginStatus');
           
           // 执行退出登录操作
           wx.showToast({
@@ -33,10 +35,10 @@ Page({
             icon: 'success'
           });
           
-          // 返回到个人中心页面（个人中心会检测未注册状态并显示注册入口）
+          // 跳转到个人中心页面（个人中心会检测未注册状态并显示注册入口）
           setTimeout(() => {
-            wx.navigateBack({
-              delta: 1
+            wx.switchTab({
+              url: '/pages/profile/profile'
             });
           }, 1000);
         }

@@ -13,6 +13,7 @@ Page({
     mbti: '',
     tags_self: [],
     customTag: '',
+    processedTags: [],
     availableTags: [
       '剧本杀大神', '社交达人', '细节控', '气氛烘托者',
       '反串爱好者', '新手护航者', '复盘小能手', '人形测谎仪'
@@ -30,15 +31,41 @@ Page({
    * 获取用户信息
    */
   getUserInfo() {
-    // 获取用户的openid
+    // 先检查缓存的用户信息
+    const cachedData = wx.getStorageSync('cachedUserInfo');
+    if (cachedData && cachedData.userInfo) {
+      const userInfo = cachedData.userInfo;
+      const tags_self = userInfo.tags_self || [];
+      this.setData({
+        userInfo: userInfo,
+        nickname: userInfo.nickname || '',
+        avatarUrl: userInfo.avatarUrl || '/images/default-avatar.png',
+        bio: userInfo.bio || '',
+        gender: userInfo.gender || 1,
+        mbti: userInfo.mbti || '',
+        tags_self: tags_self,
+        processedTags: this.processTags(tags_self)
+      });
+      return;
+    }
+    
+    // 如果没有缓存，从数据库获取
     wx.cloud.callFunction({
       name: 'quickstartFunctions',
       data: {
         type: 'getOpenId'
       },
       success: (res) => {
-        const openid = res.result.openid;
-        this.getUserData(openid);
+        if (res.result && res.result.openid) {
+          const openid = res.result.openid;
+          this.getUserData(openid);
+        } else {
+          console.error('获取openid失败，返回结果异常', res);
+          wx.showToast({
+            title: '获取用户信息失败',
+            icon: 'none'
+          });
+        }
       },
       fail: (err) => {
         console.error('获取openid失败', err);
@@ -61,6 +88,7 @@ Page({
       success: (res) => {
         if (res.data && res.data.length > 0) {
           const userInfo = res.data[0];
+          const tags_self = userInfo.tags_self || [];
           this.setData({
             userInfo: userInfo,
             nickname: userInfo.nickname || '',
@@ -68,7 +96,14 @@ Page({
             bio: userInfo.bio || '',
             gender: userInfo.gender || 1,
             mbti: userInfo.mbti || '',
-            tags_self: userInfo.tags_self || []
+            tags_self: tags_self,
+            processedTags: this.processTags(tags_self)
+          });
+        } else {
+          // 如果没有用户数据，初始化空的标签
+          this.setData({
+            tags_self: [],
+            processedTags: this.processTags([])
           });
         }
       },
@@ -78,8 +113,24 @@ Page({
           title: '获取用户信息失败',
           icon: 'none'
         });
+        // 失败时也初始化空的标签
+        this.setData({
+          tags_self: [],
+          processedTags: this.processTags([])
+        });
       }
     });
+  },
+
+  /**
+   * 处理标签数据，为每个标签添加selected属性
+   */
+  processTags(selectedTags) {
+    const availableTags = this.data.availableTags;
+    return availableTags.map(tag => ({
+      name: tag,
+      selected: selectedTags.includes(tag)
+    }));
   },
 
   /**
@@ -146,7 +197,8 @@ Page({
       tags_self.push(tag);
     }
     this.setData({
-      tags_self: tags_self
+      tags_self: tags_self,
+      processedTags: this.processTags(tags_self)
     });
   },
 
@@ -185,14 +237,13 @@ Page({
       // 将新标签添加到可用标签列表
       const availableTags = [...this.data.availableTags, customTag];
       this.setData({
-        availableTags: availableTags
+        availableTags: availableTags,
+        processedTags: this.processTags(this.data.tags_self)
       });
     }
     
-    // 添加到已选标签
-    const tags_self = [...this.data.tags_self, customTag];
+    // 新标签默认未选中，只添加到可用标签列表
     this.setData({
-      tags_self: tags_self,
       customTag: ''
     });
     

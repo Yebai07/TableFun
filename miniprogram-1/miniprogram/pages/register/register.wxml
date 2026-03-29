@@ -69,11 +69,14 @@
     <view class="form-item">
       <text class="form-label">个人标签</text>
       <view class="tag-container">
-        <view wx:for="{{availableTags}}" wx:key="{{index}}" 
-              class="tag-item {{tags_self.includes(item) ? 'tag-selected' : ''}}" 
-              data-tag="{{item}}" 
-              bindtap="selectTag">
-          {{item}}
+        <view wx:for="{{processedTags}}" wx:key="{{index}}" 
+              data-tag="{{item.name}}" 
+              bindtap="selectTag"
+              style="padding: 15rpx 30rpx; border-radius: 30rpx; font-size: 24rpx; transition: all 0.2s ease; box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.05); position: relative; overflow: visible; display: flex; align-items: center; justify-content: center; min-width: 100rpx; text-align: center; {{item.selected ? 'border: 2rpx solid #ffd700; background-color: #fffacd; color: #333; font-weight: bold;' : 'border: 2rpx solid #e0e0e0; background-color: #f5f5f5; color: #666;'}}">
+          <text class="tag-text">{{item.name}}</text>
+          <view wx:if="{{item.selected}}" style="position: absolute; top: -8rpx; right: -8rpx; width: 28rpx; height: 28rpx; background-color: #52c41a; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2rpx 6rpx rgba(82, 196, 26, 0.4); z-index: 10;">
+            <text style="color: #fff; font-size: 18rpx; font-weight: bold; line-height: 1;">✓</text>
+          </view>
         </view>
       </view>
       

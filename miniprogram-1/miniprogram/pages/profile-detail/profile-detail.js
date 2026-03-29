@@ -24,7 +24,7 @@ Page({
     wx.cloud.callFunction({
       name: 'quickstartFunctions',
       data: {
-        type: 'getOpenid'
+        type: 'getOpenId'
       },
       success: (res) => {
         if (res.result && res.result.openid) {
@@ -40,93 +40,40 @@ Page({
                   userInfo: res.data[0]
                 });
               } else {
-                // 失败时使用模拟数据
-                const userInfo = {
-                  _id: "2d12bec269c130f1014f6539754f4963",
-                  _openid: openid,
-                  avatarUrl: "/images/default-avatar.png",
-                  bio: "这是我的个性签名...",
-                  creditScore: 800,
-                  gender: 1,
-                  mbti: "ENTP",
-                  nickname: "探索者",
-                  tags_others: [    
-                    {count: 11, name: "剧本杀大神"},
-                    {count: 9, name: "人形测谎仪"}
-                  ],
-                  tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
-                };
-                this.setData({
-                  userInfo: userInfo
+                console.error('用户信息不存在，请先注册');
+                wx.showToast({
+                  title: '用户信息不存在，请先注册',
+                  icon: 'none'
                 });
+                // 跳转到注册页面
+                setTimeout(() => {
+                  wx.navigateTo({
+                    url: '/pages/register/register'
+                  });
+                }, 1000);
               }
             },
             fail: (err) => {
               console.error('获取用户信息失败', err);
-              // 失败时使用模拟数据
-              const userInfo = {
-                _id: "2d12bec269c130f1014f6539754f4963",
-                _openid: openid,
-                avatarUrl: "/images/default-avatar.png",
-                bio: "这是我的个性签名...",
-                creditScore: 800,
-                gender: 1,
-                mbti: "ENTP",
-                nickname: "探索者",
-                tags_others: [    
-                  {count: 11, name: "剧本杀大神"},
-                  {count: 9, name: "人形测谎仪"}
-                ],
-                tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
-              };
-              this.setData({
-                userInfo: userInfo
+              wx.showToast({
+                title: '获取用户信息失败',
+                icon: 'none'
               });
             }
           });
         } else {
           console.error('获取openid失败，返回结果异常', res);
-          // 使用模拟数据
-          const userInfo = {
-            _id: "2d12bec269c130f1014f6539754f4963",
-            _openid: "用户的唯一ID",
-            avatarUrl: "/images/default-avatar.png",
-            bio: "这是我的个性签名...",
-            creditScore: 800,
-            gender: 1,
-            mbti: "ENTP",
-            nickname: "探索者",
-            tags_others: [    
-              {count: 11, name: "剧本杀大神"},
-              {count: 9, name: "人形测谎仪"}
-            ],
-            tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
-          };
-          this.setData({
-            userInfo: userInfo
+          wx.showToast({
+            title: '获取用户信息失败',
+            icon: 'none'
           });
         }
       },
       fail: (err) => {
         console.error('获取openid失败', err);
-        // 使用模拟数据
-        const userInfo = {
-          _id: "2d12bec269c130f1014f6539754f4963",
-          _openid: "用户的唯一ID",
-          avatarUrl: "/images/default-avatar.png",
-          bio: "这是我的个性签名...",
-          creditScore: 800,
-          gender: 1,
-          mbti: "ENTP",
-          nickname: "探索者",
-          tags_others: [    
-            {count: 11, name: "剧本杀大神"},
-            {count: 9, name: "人形测谎仪"}
-          ],
-          tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
-        };
-        this.setData({
-          userInfo: userInfo
+        wx.showToast({
+          title: '获取用户信息失败',
+          icon: 'none'
         });
       }
     });
@@ -220,7 +167,25 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-
+    // 检查是否有缓存的用户信息
+    const cachedData = wx.getStorageSync('cachedUserInfo');
+    if (cachedData) {
+      // 检查缓存是否过期（5分钟）
+      const cacheTime = cachedData.timestamp || 0;
+      const now = Date.now();
+      const cacheExpiry = 5 * 60 * 1000; // 5分钟
+      
+      if (now - cacheTime < cacheExpiry) {
+        // 缓存未过期，使用缓存数据
+        this.setData({
+          userInfo: cachedData.userInfo
+        });
+        return;
+      }
+    }
+    
+    // 缓存过期或不存在，重新从数据库获取数据
+    this.getUserInfo();
   },
 
   /**

@@ -7,21 +7,65 @@ Page({
   data: {
     isRegistered: false,
     isLoading: true,
-    userInfo: null
+    userInfo: null,
+    devMode: false,
+    cachedUserInfo: null
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
-    // 页面加载时不自动跳转，只检查状态
+    // 检查是否开启开发模式
+    const devMode = wx.getStorageSync('devMode') || false;
+    this.setData({ devMode: devMode });
+    
+    // 加载缓存的用户信息
+    const cachedData = wx.getStorageSync('cachedUserInfo');
+    if (cachedData && cachedData.userInfo) {
+      this.setData({ cachedUserInfo: cachedData.userInfo });
+    }
   },
 
   /**
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 每次显示页面时检查用户注册状态
+    // 检查登录状态
+    const loginStatus = wx.getStorageSync('loginStatus');
+    if (!loginStatus) {
+      // 未登录状态，清除缓存
+      wx.removeStorageSync('cachedUserInfo');
+      this.setData({
+        isRegistered: false,
+        isLoading: false,
+        userInfo: null,
+        cachedUserInfo: null
+      });
+      return;
+    }
+    
+    // 检查是否有缓存的用户信息
+    const cachedData = wx.getStorageSync('cachedUserInfo');
+    if (cachedData) {
+      // 检查缓存是否过期（5分钟）
+      const cacheTime = cachedData.timestamp || 0;
+      const now = Date.now();
+      const cacheExpiry = 5 * 60 * 1000; // 5分钟
+      
+      if (now - cacheTime < cacheExpiry) {
+        // 缓存未过期，使用缓存数据
+        this.setData({
+          isRegistered: true,
+          isLoading: false,
+          userInfo: cachedData.userInfo,
+          cachedUserInfo: cachedData.userInfo
+        });
+        return;
+      }
+    }
+    
+    // 缓存过期或不存在，重新从数据库获取数据
     this.checkUserRegistered();
   },
 
@@ -72,14 +116,27 @@ Page({
         if (res.data && res.data.length > 0) {
           // 用户已注册，显示个人主页内容
           console.log('用户已注册，显示个人主页');
+          const userInfo = res.data[0];
+          // 缓存用户信息到本地存储，添加缓存时间戳
+          const cachedData = {
+            userInfo: userInfo,
+            timestamp: Date.now()
+          };
+          wx.setStorageSync('cachedUserInfo', cachedData);
+          // 设置登录状态
+          wx.setStorageSync('loginStatus', true);
           this.setData({
             isRegistered: true,
             isLoading: false,
-            userInfo: res.data[0]
+            userInfo: userInfo,
+            cachedUserInfo: userInfo
           });
         } else {
           // 用户未注册，显示注册入口
           console.log('用户未注册，显示注册入口');
+          // 清除缓存和登录状态
+          wx.removeStorageSync('cachedUserInfo');
+          wx.removeStorageSync('loginStatus');
           this.setData({
             isRegistered: false,
             isLoading: false
@@ -88,6 +145,9 @@ Page({
       },
       fail: (err) => {
         console.error('获取用户数据失败', err);
+        // 清除缓存和登录状态
+        wx.removeStorageSync('cachedUserInfo');
+        wx.removeStorageSync('loginStatus');
         this.setData({
           isRegistered: false,
           isLoading: false

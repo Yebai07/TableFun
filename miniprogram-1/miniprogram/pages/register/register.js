@@ -14,6 +14,7 @@ Page({
     region: '',
     tags_self: [],
     customTag: '',
+    processedTags: [],
     availableTags: [
       '剧本杀大神', '社交达人', '细节控', '气氛烘托者',
       '反串爱好者', '新手护航者', '复盘小能手', '人形测谎仪'
@@ -24,7 +25,20 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad(options) {
+    this.setData({
+      processedTags: this.processTags([])
+    });
+  },
 
+  /**
+   * 处理标签数据，为每个标签添加selected属性
+   */
+  processTags(selectedTags) {
+    const availableTags = this.data.availableTags;
+    return availableTags.map(tag => ({
+      name: tag,
+      selected: selectedTags.includes(tag)
+    }));
   },
 
   /**
@@ -132,7 +146,8 @@ Page({
       // 将新标签添加到可用标签列表
       const availableTags = [...this.data.availableTags, customTag];
       this.setData({
-        availableTags: availableTags
+        availableTags: availableTags,
+        processedTags: this.processTags(this.data.tags_self)
       });
     }
     
@@ -140,6 +155,7 @@ Page({
     const tags_self = [...this.data.tags_self, customTag];
     this.setData({
       tags_self: tags_self,
+      processedTags: this.processTags(tags_self),
       customTag: ''
     });
     
@@ -153,16 +169,23 @@ Page({
    * 选择标签
    */
   selectTag(e) {
+    console.log('点击标签:', e);
     const tag = e.currentTarget.dataset.tag;
+    console.log('选择标签:', tag);
     let tags_self = [...this.data.tags_self];
+    console.log('选择前标签:', tags_self);
     if (tags_self.includes(tag)) {
       tags_self = tags_self.filter(item => item !== tag);
     } else {
       tags_self.push(tag);
     }
+    console.log('选择后标签:', tags_self);
     this.setData({
-      tags_self: tags_self
+      tags_self: tags_self,
+      processedTags: this.processTags(tags_self)
     });
+    console.log('setData后标签:', this.data.tags_self);
+    console.log('处理后的标签:', this.data.processedTags);
   },
 
   /**
@@ -227,6 +250,19 @@ Page({
       data: userData,
       success: (res) => {
         console.log('注册成功', res);
+        // 构造完整的用户信息对象
+        const completeUserInfo = {
+          ...userData,
+          _id: res._id,
+          _openid: openid
+        };
+        // 缓存用户信息和设置登录状态，添加时间戳
+        const cachedData = {
+          userInfo: completeUserInfo,
+          timestamp: Date.now()
+        };
+        wx.setStorageSync('cachedUserInfo', cachedData);
+        wx.setStorageSync('loginStatus', true);
         wx.showToast({
           title: '注册成功',
           icon: 'success'
