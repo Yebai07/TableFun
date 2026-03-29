@@ -1,2 +1,79 @@
 <!--pages/profile/profile.wxml-->
-<text>pages/profile/profile.wxml</text>
+<view class="container">
+  <!-- 加载中 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading">加载中...</view>
+  </view>
+  
+  <!-- 未注册状态：显示注册入口 -->
+  <view wx:elif="{{!isRegistered}}" class="unregistered-container">
+    <view class="unregistered-content">
+      <image class="unregistered-avatar" src="/images/default-avatar.png" mode="aspectFill"></image>
+      <text class="unregistered-text">您还未注册</text>
+      <text class="unregistered-subtext">注册后即可体验完整功能</text>
+      <button class="register-btn" bindtap="navigateToRegister">立即注册</button>
+    </view>
+  </view>
+  
+  <!-- 已注册状态：直接显示个人主页内容 -->
+  <view wx:else class="profile-content">
+    <!-- 顶部导航栏 -->
+    <view class="nav-bar">
+      <view class="nav-title">个人中心</view>
+      <view class="settings-btn" bindtap="navigateToSettings">
+        <text class="settings-icon">⚙️</text>
+      </view>
+    </view>
+    
+    <!-- 头像和基本信息 -->
+    <view class="profile-header">
+      <view class="avatar-container">
+        <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      </view>
+      <view class="user-info">
+        <text class="nickname">{{userInfo.nickname || '用户'}}</text>
+        <text class="user-id">ID: {{userInfo._id ? userInfo._id.substring(0, 6) : '123456'}}</text>
+        <text class="user-bio" wx:if="{{userInfo && userInfo.bio}}">{{userInfo.bio}}</text>
+      </view>
+    </view>
+    
+    <!-- 数据统计行 -->
+    <view class="stats-container">
+      <view class="stat-item" bindtap="navigateToUserTags">
+        <view class="stat-circle">
+          <text class="stat-number">{{userInfo.creditScore || 0}}</text>
+          <text class="stat-label">信用分</text>
+        </view>
+      </view>
+      <view class="stat-item" bindtap="navigateToUserTags">
+        <view class="stat-circle">
+          <text class="stat-number">{{userInfo.tags_self && userInfo.tags_self.length || 0}}</text>
+          <text class="stat-label">标签</text>
+        </view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-circle">
+          <text class="stat-number">23</text>
+          <text class="stat-label">动态</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 功能入口按钮 -->
+    <view class="feature-container">
+      <view class="feature-item" bindtap="viewParticipatedScripts">
+        <text class="feature-text">参与的剧本</text>
+        <text class="feature-arrow">→</text>
+      </view>
+      <view class="feature-item" bindtap="viewMedals">
+        <text class="feature-text">我的勋章</text>
+        <text class="feature-arrow">→</text>
+      </view>
+    </view>
+    
+    <!-- 编辑资料按钮 -->
+    <view class="edit-profile-section">
+      <button class="edit-profile-btn" bindtap="navigateToProfileEdit">编辑个人资料</button>
+    </view>
+  </view>
+</view>

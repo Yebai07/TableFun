@@ -1,0 +1,260 @@
+// pages/profile-detail/profile-detail.js
+Page({
+  
+  /**
+   * 页面的初始数据
+   */
+  data: {
+    userInfo: null,
+    dynamicCount: 23
+  },
+
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  onLoad(options) {
+    this.getUserInfo();
+  },
+
+  /**
+   * 获取用户信息
+   */
+  getUserInfo() {
+    // 获取用户的openid
+    wx.cloud.callFunction({
+      name: 'quickstartFunctions',
+      data: {
+        type: 'getOpenid'
+      },
+      success: (res) => {
+        if (res.result && res.result.openid) {
+          const openid = res.result.openid;
+          // 从云数据库获取数据
+          const db = wx.cloud.database();
+          db.collection('users').where({
+            _openid: openid
+          }).get({
+            success: (res) => {
+              if (res.data && res.data.length > 0) {
+                this.setData({
+                  userInfo: res.data[0]
+                });
+              } else {
+                // 失败时使用模拟数据
+                const userInfo = {
+                  _id: "2d12bec269c130f1014f6539754f4963",
+                  _openid: openid,
+                  avatarUrl: "/images/default-avatar.png",
+                  bio: "这是我的个性签名...",
+                  creditScore: 800,
+                  gender: 1,
+                  mbti: "ENTP",
+                  nickname: "探索者",
+                  tags_others: [    
+                    {count: 11, name: "剧本杀大神"},
+                    {count: 9, name: "人形测谎仪"}
+                  ],
+                  tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
+                };
+                this.setData({
+                  userInfo: userInfo
+                });
+              }
+            },
+            fail: (err) => {
+              console.error('获取用户信息失败', err);
+              // 失败时使用模拟数据
+              const userInfo = {
+                _id: "2d12bec269c130f1014f6539754f4963",
+                _openid: openid,
+                avatarUrl: "/images/default-avatar.png",
+                bio: "这是我的个性签名...",
+                creditScore: 800,
+                gender: 1,
+                mbti: "ENTP",
+                nickname: "探索者",
+                tags_others: [    
+                  {count: 11, name: "剧本杀大神"},
+                  {count: 9, name: "人形测谎仪"}
+                ],
+                tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
+              };
+              this.setData({
+                userInfo: userInfo
+              });
+            }
+          });
+        } else {
+          console.error('获取openid失败，返回结果异常', res);
+          // 使用模拟数据
+          const userInfo = {
+            _id: "2d12bec269c130f1014f6539754f4963",
+            _openid: "用户的唯一ID",
+            avatarUrl: "/images/default-avatar.png",
+            bio: "这是我的个性签名...",
+            creditScore: 800,
+            gender: 1,
+            mbti: "ENTP",
+            nickname: "探索者",
+            tags_others: [    
+              {count: 11, name: "剧本杀大神"},
+              {count: 9, name: "人形测谎仪"}
+            ],
+            tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
+          };
+          this.setData({
+            userInfo: userInfo
+          });
+        }
+      },
+      fail: (err) => {
+        console.error('获取openid失败', err);
+        // 使用模拟数据
+        const userInfo = {
+          _id: "2d12bec269c130f1014f6539754f4963",
+          _openid: "用户的唯一ID",
+          avatarUrl: "/images/default-avatar.png",
+          bio: "这是我的个性签名...",
+          creditScore: 800,
+          gender: 1,
+          mbti: "ENTP",
+          nickname: "探索者",
+          tags_others: [    
+            {count: 11, name: "剧本杀大神"},
+            {count: 9, name: "人形测谎仪"}
+          ],
+          tags_self: ["06", "男", "学生", "郫都区", "社交达人", "细节控", "气氛烘托者"]
+        };
+        this.setData({
+          userInfo: userInfo
+        });
+      }
+    });
+  },
+
+  /**
+   * 跳转到设置页面
+   */
+  navigateToSettings() {
+    wx.navigateTo({
+      url: '/pages/settings/settings'
+    });
+  },
+
+  /**
+   * 跳转到用户标签页
+   */
+  navigateToUserTags() {
+    wx.navigateTo({
+      url: '/pages/user-tags/user-tags'
+    });
+  },
+
+  /**
+   * 返回上一页
+   */
+  navigateBack() {
+    wx.navigateBack();
+  },
+
+  /**
+   * 评价TA
+   */
+  evaluateUser() {
+    // 评价功能逻辑
+    wx.showToast({
+      title: '评价功能开发中',
+      icon: 'none'
+    });
+  },
+
+  /**
+   * 和TA聊
+   */
+  chatWithUser() {
+    // 聊天功能逻辑
+    wx.showToast({
+      title: '聊天功能开发中',
+      icon: 'none'
+    });
+  },
+
+  /**
+   * 查看TA参与的剧本
+   */
+  viewParticipatedScripts() {
+    wx.showToast({
+      title: '功能开发中',
+      icon: 'none'
+    });
+  },
+
+  /**
+   * 查看TA的勋章
+   */
+  viewMedals() {
+    wx.showToast({
+      title: '功能开发中',
+      icon: 'none'
+    });
+  },
+
+  /**
+   * 查看TA的个签
+   */
+  viewBio() {
+    wx.showToast({
+      title: '功能开发中',
+      icon: 'none'
+    });
+  },
+
+  /**
+   * 生命周期函数--监听页面初次渲染完成
+   */
+  onReady() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面显示
+   */
+  onShow() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面隐藏
+   */
+  onHide() {
+
+  },
+
+  /**
+   * 生命周期函数--监听页面卸载
+   */
+  onUnload() {
+
+  },
+
+  /**
+   * 页面相关事件处理函数--监听用户下拉动作
+   */
+  onPullDownRefresh() {
+
+  },
+
+  /**
+   * 页面上拉触底事件的处理函数
+   */
+  onReachBottom() {
+
+  },
+
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage() {
+
+  }
+})
