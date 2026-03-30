@@ -225,9 +225,9 @@ Page({
    * 查看参与的剧本
    */
   viewParticipatedScripts() {
-    wx.showToast({
-      title: '功能开发中',
-      icon: 'none'
+    // 跳转到“参与的剧本”页面
+    wx.navigateTo({
+      url: '/pages/participated-scripts/participated-scripts'
     });
   },
 

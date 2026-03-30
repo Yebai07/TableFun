@@ -4,6 +4,7 @@
     "pages/lobby/lobby",
     "pages/scripts/scripts",
     "pages/profile/profile",
+    "pages/participated-scripts/participated-scripts",
     "pages/profile-detail/profile-detail",
     "pages/profile-edit/profile-edit",
     "pages/settings/settings",
