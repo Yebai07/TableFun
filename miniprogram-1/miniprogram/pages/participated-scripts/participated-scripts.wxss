@@ -28,3 +28,31 @@
   font-size: 24rpx;
 }
 
+.script-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.script-status {
+  font-size: 22rpx;
+  padding: 6rpx 10rpx;
+  border-radius: 10rpx;
+}
+.status-started {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+.status-forming {
+  background-color: #fff7e6;
+  color: #fa8c16;
+}
+.script-meta-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10rpx;
+}
+.script-author {
+  color: #666;
+  font-size: 24rpx;
+}
+

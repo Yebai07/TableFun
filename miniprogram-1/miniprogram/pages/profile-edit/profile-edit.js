@@ -291,6 +291,39 @@ Page({
           title: '保存成功',
           icon: 'success'
         });
+        // 更新本地缓存中的用户信息（这样返回个人页时能立即看到更新）
+        try {
+          const cachedData = wx.getStorageSync('cachedUserInfo') || {};
+          const prevUser = cachedData.userInfo || this.data.userInfo || {};
+          const newUser = Object.assign({}, prevUser, userData);
+          // 保证 _id 和 displayId 保留
+          if (prevUser._id) newUser._id = prevUser._id;
+          newUser.displayId = newUser._id || newUser.openid || '';
+          wx.setStorageSync('cachedUserInfo', { userInfo: newUser, timestamp: Date.now() });
+          // 提示 profile 页面刷新（返回时强制从后端重新拉取）
+          wx.setStorageSync('profileUpdated', true);
+          console.log('profile-edit: saved cache and set profileUpdated, newUser=', newUser);
+          // 额外：尝试直接更新上一页的数据，使返回时能立刻看到更新（避免可见性延迟）
+          try {
+            const pages = getCurrentPages();
+            if (pages && pages.length >= 2) {
+              const prevPage = pages[pages.length - 2];
+              // 更新前一页的字段（profile 页面期望的字段名），保持一致性
+              prevPage.setData({
+                userInfo: newUser,
+                cachedUserInfo: newUser,
+                isRegistered: true,
+                isLoading: false
+              });
+              console.log('profile-edit: updated prevPage data directly');
+            }
+          } catch (e) {
+            console.warn('profile-edit: update prevPage failed', e);
+          }
+        } catch (e) {
+          console.warn('更新缓存失败', e);
+        }
+
         // 跳转到个人中心
         setTimeout(() => {
           wx.navigateBack();

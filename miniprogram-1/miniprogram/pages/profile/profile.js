@@ -23,7 +23,13 @@ Page({
     // 加载缓存的用户信息
     const cachedData = wx.getStorageSync('cachedUserInfo');
     if (cachedData && cachedData.userInfo) {
-      this.setData({ cachedUserInfo: cachedData.userInfo });
+      // 确保缓存的 userInfo 包含 displayId 字段（避免在 wxml 中调用 substring）
+      const ui = cachedData.userInfo;
+      if (!ui.displayId) {
+        // 使用完整的数据库 _id 或 openid 而不是截断为 6 位
+        ui.displayId = (ui._id) || (ui.openid) || '';
+      }
+      this.setData({ cachedUserInfo: ui });
     }
   },
 
@@ -45,8 +51,18 @@ Page({
       return;
     }
     
-    // 检查是否有缓存的用户信息
+    // 调试日志：打印登录状态、profileUpdated 和缓存信息，帮助定位显示延迟问题
+    const profileUpdated = wx.getStorageSync('profileUpdated');
     const cachedData = wx.getStorageSync('cachedUserInfo');
+    console.log('profile:onShow - loginStatus=', loginStatus, 'profileUpdated=', profileUpdated, 'cachedData=', cachedData);
+
+    // 如果来自编辑页有更新，优先强制刷新（必须在读取缓存前检查）
+    if (profileUpdated) {
+      wx.removeStorageSync('profileUpdated');
+      console.log('profile:onShow - detected profileUpdated, forcing refresh from DB');
+      this.checkUserRegistered();
+      return;
+    }
     if (cachedData) {
       // 检查缓存是否过期（5分钟）
       const cacheTime = cachedData.timestamp || 0;
@@ -65,6 +81,7 @@ Page({
       }
     }
     
+
     // 缓存过期或不存在，重新从数据库获取数据
     this.checkUserRegistered();
   },
@@ -117,7 +134,11 @@ Page({
           // 用户已注册，显示个人主页内容
           console.log('用户已注册，显示个人主页');
           const userInfo = res.data[0];
+          // 使用完整的数据库 _id 或 openid 作为显示 ID
+          userInfo.displayId = (userInfo._id) || (openid) || '';
           // 缓存用户信息到本地存储，添加缓存时间戳
+          // 确保 displayId 字段存在
+          userInfo.displayId = userInfo._id || openid || '';
           const cachedData = {
             userInfo: userInfo,
             timestamp: Date.now()

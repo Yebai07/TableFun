@@ -13,10 +13,16 @@
   </view>
 
   <view wx:else class="list-container">
-    <block wx:for="{{scripts}}" wx:key="_id">
+    <block wx:for="{{scripts}}" wx:for-item="item" wx:key="_id">
       <view class="script-item" bindtap="openScriptDetail" data-id="{{item._id}}">
-        <text class="script-title">{{item.title}}</text>
-        <text class="script-meta">参与时间: {{item.joinedAt | formatDate}}</text>
+        <view class="script-row">
+          <text class="script-title">{{item.title}}</text>
+          <text class="script-status {{item.status == 'started' ? 'status-started' : 'status-forming'}}">{{item.statusText}}</text>
+        </view>
+        <view class="script-meta-row">
+          <text class="script-meta">参与时间: {{item.joinedAt}}</text>
+          <text class="script-author" wx:if="{{item.author}}">作者: {{item.author}}</text>
+        </view>
       </view>
     </block>
   </view>

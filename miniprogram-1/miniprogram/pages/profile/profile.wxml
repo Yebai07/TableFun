@@ -32,7 +32,7 @@
       </view>
       <view class="user-info">
         <text class="nickname">{{userInfo.nickname || '用户'}}</text>
-        <text class="user-id">ID: {{userInfo._id ? userInfo._id.substring(0, 6) : '123456'}}</text>
+        <text class="user-id">ID: {{userInfo.displayId || userInfo._id || ''}}</text>
         <text class="user-bio" wx:if="{{userInfo && userInfo.bio}}">{{userInfo.bio}}</text>
       </view>
     </view>
