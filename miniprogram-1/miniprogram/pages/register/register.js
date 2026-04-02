@@ -189,99 +189,98 @@ Page({
   },
 
   /**
-   * 注册
+   * 注册按钮点击事件
    */
   register() {
     if (!this.data.nickname) {
-      wx.showToast({
-        title: '请输入昵称',
-        icon: 'none'
-      });
-      return;
+      return wx.showToast({ title: '请输入昵称', icon: 'none' });
     }
-
-    // 获取用户的openid
-    wx.cloud.callFunction({
-      name: 'quickstartFunctions',
-      data: {
-        type: 'getOpenId'
-      },
-      success: (res) => {
-        if (res.result && res.result.openid) {
-          const openid = res.result.openid;
-          this.createUser(openid);
-        } else {
-          console.error('获取openid失败，返回结果异常', res);
-          // 使用模拟openid进行测试
-          const mockOpenid = 'mock_openid_' + Date.now();
-          console.log('使用模拟openid:', mockOpenid);
-          this.createUser(mockOpenid);
-        }
-      },
-      fail: (err) => {
-        console.error('获取openid失败', err);
-        // 使用模拟openid进行测试
-        const mockOpenid = 'mock_openid_' + Date.now();
-        console.log('使用模拟openid:', mockOpenid);
-        this.createUser(mockOpenid);
-      }
-    });
+    // 不再调用云函数，直接进入创建流程
+    this.createUser(); 
   },
 
   /**
-   * 创建用户数据
+   * 创建或更新用户数据（自带防重复机制）
    */
-  createUser(openid) {
+  createUser() {
     const db = wx.cloud.database();
     const userData = {
       avatarUrl: this.data.avatarUrl,
       bio: this.data.bio,
-      creditScore: 800, // 默认信用分
+      creditScore: 800,
       gender: this.data.gender,
       mbti: this.data.mbti,
       nickname: this.data.nickname,
       age: this.data.age,
       region: this.data.region,
-      tags_others: [], // 默认空
-      tags_self: this.data.tags_self // 用户选择的标签
+      tags_others: [],
+      tags_self: this.data.tags_self
     };
 
-    db.collection('users').add({
-      data: userData,
-      success: (res) => {
-        console.log('注册成功', res);
-        // 构造完整的用户信息对象
-        const completeUserInfo = {
-          ...userData,
-          _id: res._id,
-          _openid: openid
-        };
-        // 缓存用户信息和设置登录状态，添加时间戳
-        const cachedData = {
-          userInfo: completeUserInfo,
-          timestamp: Date.now()
-        };
-        wx.setStorageSync('cachedUserInfo', cachedData);
-        wx.setStorageSync('loginStatus', true);
-        wx.showToast({
-          title: '注册成功',
-          icon: 'success'
+    wx.showLoading({ title: '正在处理...' });
+
+    // 1. 先用魔术变量查一查，你是不是已经注册过了
+    db.collection('users').where({ _openid: '{openid}' }).get().then(res => {
+      if (res.data.length > 0) {
+        // 【情况A】老用户：覆盖更新资料
+        const existDocId = res.data[0]._id;
+        const realOpenid = res.data[0]._openid; // 拿到真实的微信ID
+        db.collection('users').doc(existDocId).update({ data: userData }).then(() => {
+          this.saveAndLogin(userData, existDocId, realOpenid);
         });
-        // 跳转到个人中心
-        setTimeout(() => {
-          wx.switchTab({
-            url: '/pages/profile/profile'
+      } else {
+        // 【情况B】纯新用户：新增记录
+        db.collection('users').add({ data: userData }).then(addRes => {
+          // 新增成功后，立刻查回这条数据，获取微信系统为你自动生成的真实 OpenID
+          db.collection('users').doc(addRes._id).get().then(docRes => {
+            this.saveAndLogin(userData, addRes._id, docRes.data._openid);
           });
-        }, 1500);
-      },
-      fail: (err) => {
-        console.error('注册失败', err);
-        wx.showToast({
-          title: '注册失败，请重试',
-          icon: 'none'
         });
       }
+    }).catch(err => {
+      wx.hideLoading();
+      console.error('数据库操作失败', err);
+      wx.showToast({ title: '注册失败', icon: 'none' });
     });
+  },
+
+  /**
+   * 提取出来的公共方法：保存缓存并跳转（无需修改，直接保留之前的即可）
+   */
+  saveAndLogin(userData, docId, openid) {
+    wx.hideLoading();
+    const completeUserInfo = { ...userData, _id: docId, _openid: openid };
+    wx.setStorageSync('cachedUserInfo', { userInfo: completeUserInfo, timestamp: Date.now() });
+    wx.setStorageSync('loginStatus', true);
+    wx.showToast({ title: '注册成功', icon: 'success' });
+    setTimeout(() => { wx.switchTab({ url: '/pages/profile/profile' }); }, 1500);
+  },
+
+  /**
+   * 提取出来的公共方法：保存缓存并跳转
+   */
+  saveAndLogin(userData, docId, openid) {
+    wx.hideLoading();
+    // 构造完整的用户信息对象
+    const completeUserInfo = {
+      ...userData,
+      _id: docId,
+      _openid: openid
+    };
+    
+    // 更新本地缓存
+    wx.setStorageSync('cachedUserInfo', {
+      userInfo: completeUserInfo,
+      timestamp: Date.now()
+    });
+    wx.setStorageSync('loginStatus', true);
+    
+    wx.showToast({ title: '注册成功', icon: 'success' });
+    
+    // 跳转到个人中心
+    setTimeout(() => {
+      wx.switchTab({ url: '/pages/profile/profile' });
+    }, 1500);
   },
 
   /**

@@ -1,66 +1,48 @@
-// pages/usercard/usercard.js
+const db = wx.cloud.database()
+
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    userInfo: {},
+    displayId: '',
+    isLoading: true,
+    isMe: false // 标记是否为本人
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad(options) {
+    const targetOpenid = options.openid;
+    
+    // 从缓存获取当前登录用户的 OpenID
+    const cachedData = wx.getStorageSync('cachedUserInfo');
+    const myOpenid = cachedData?.userInfo?._openid || cachedData?.userInfo?.openid;
 
+    this.setData({ isMe: targetOpenid === myOpenid });
+    
+    // 设置页面标题
+    wx.setNavigationBarTitle({
+      title: this.data.isMe ? '我的名片' : '玩家名片'
+    });
+
+    this.fetchUserInfo(targetOpenid);
   },
 
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
+  fetchUserInfo(openid) {
+    db.collection('users').where({ _openid: openid }).get().then(res => {
+      if (res.data.length > 0) {
+        const user = res.data[0];
+        this.setData({
+          userInfo: user,
+          displayId: (user._id || '').substring(0, 6),
+          isLoading: false
+        });
+      }
+    });
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
+  // 差分跳转逻辑
+  onEditProfile() {
+    wx.navigateTo({ url: '/pages/profile-edit/profile-edit' });
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
+  onEvaluate() { wx.showToast({ title: '评价功能开发中', icon: 'none' }); },
+  onChat() { wx.showToast({ title: '聊天功能开发中', icon: 'none' }); }
 })

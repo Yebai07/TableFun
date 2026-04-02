@@ -37,11 +37,15 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow() {
-    // 检查登录状态
-    const loginStatus = wx.getStorageSync('loginStatus');
-    if (!loginStatus) {
-      // 未登录状态，清除缓存
-      wx.removeStorageSync('cachedUserInfo');
+    const profileUpdated = wx.getStorageSync('profileUpdated'); // 检查是否有强制刷新标记
+    if (profileUpdated) {
+      wx.removeStorageSync('profileUpdated');
+      this.checkUserRegistered();
+      return;
+    }
+  
+    const isManualLogout = wx.getStorageSync('isManualLogout'); // 检查是否有手动退出登录的标记
+    if (isManualLogout) {
       this.setData({
         isRegistered: false,
         isLoading: false,
@@ -50,27 +54,16 @@ Page({
       });
       return;
     }
-    
-    // 调试日志：打印登录状态、profileUpdated 和缓存信息，帮助定位显示延迟问题
-    const profileUpdated = wx.getStorageSync('profileUpdated');
-    const cachedData = wx.getStorageSync('cachedUserInfo');
-    console.log('profile:onShow - loginStatus=', loginStatus, 'profileUpdated=', profileUpdated, 'cachedData=', cachedData);
-
-    // 如果来自编辑页有更新，优先强制刷新（必须在读取缓存前检查）
-    if (profileUpdated) {
-      wx.removeStorageSync('profileUpdated');
-      console.log('profile:onShow - detected profileUpdated, forcing refresh from DB');
-      this.checkUserRegistered();
-      return;
-    }
-    if (cachedData) {
-      // 检查缓存是否过期（5分钟）
+  
+    const cachedData = wx.getStorageSync('cachedUserInfo'); // 检查本地缓存是否有效
+    const loginStatus = wx.getStorageSync('loginStatus');
+  
+    if (loginStatus && cachedData) {
       const cacheTime = cachedData.timestamp || 0;
       const now = Date.now();
-      const cacheExpiry = 5 * 60 * 1000; // 5分钟
+      const cacheExpiry = 5 * 60 * 1000;
       
       if (now - cacheTime < cacheExpiry) {
-        // 缓存未过期，使用缓存数据
         this.setData({
           isRegistered: true,
           isLoading: false,
@@ -80,43 +73,42 @@ Page({
         return;
       }
     }
-    
-
-    // 缓存过期或不存在，重新从数据库获取数据
-    this.checkUserRegistered();
+  
+    this.checkUserRegistered(); // 最核心的修复：如果没有缓存，直接去数据库静默核对
   },
 
   /**
-   * 检查用户是否已注册
+   * 检查用户是否已注册（使用原生魔术变量，彻底抛弃云函数）
    */
   checkUserRegistered() {
     this.setData({ isLoading: true });
+    const db = wx.cloud.database();
     
-    // 获取用户的openid
-    wx.cloud.callFunction({
-      name: 'quickstartFunctions',
-      data: {
-        type: 'getOpenId'
-      },
+    // 直接利用微信自带的魔术变量 '{openid}' 查询自己的数据
+    db.collection('users').where({
+      _openid: '{openid}' 
+    }).get({
       success: (res) => {
-        console.log('获取openid结果:', res);
-        if (res.result && res.result.openid) {
-          const openid = res.result.openid;
-          this.getUserData(openid);
-        } else {
-          console.error('获取openid失败，返回结果异常', res);
-          this.setData({ 
-            isRegistered: false, 
-            isLoading: false 
+        if (res.data && res.data.length > 0) {
+          // 数据库里有你的记录，静默完美登录！
+          const userInfo = res.data[0];
+          wx.setStorageSync('cachedUserInfo', { userInfo: userInfo, timestamp: Date.now() });
+          wx.setStorageSync('loginStatus', true);
+          this.setData({
+            isRegistered: true,
+            isLoading: false,
+            userInfo: userInfo,
+            cachedUserInfo: userInfo
           });
+          console.log('静默登录成功！欢迎回来');
+        } else {
+          // 数据库里真没你，显示注册按钮
+          this.setData({ isRegistered: false, isLoading: false });
         }
       },
       fail: (err) => {
-        console.error('获取openid失败', err);
-        this.setData({ 
-          isRegistered: false, 
-          isLoading: false 
-        });
+        console.error('查询数据库失败', err);
+        this.setData({ isRegistered: false, isLoading: false });
       }
     });
   },
@@ -177,12 +169,32 @@ Page({
     });
   },
 
-  /**
-   * 跳转到注册页面
-   */
   navigateToRegister() {
-    wx.navigateTo({
-      url: '/pages/register/register'
+    wx.removeStorageSync('isManualLogout'); // 清除手动退出标记，允许重新登录
+    this.setData({ isLoading: true });
+    
+    wx.cloud.callFunction({
+      name: 'quickstartFunctions',
+      data: { type: 'getOpenId' },
+      success: (res) => {
+        if (res.result && res.result.openid) {
+          const db = wx.cloud.database();
+          db.collection('users').where({ _openid: res.result.openid }).get({
+            success: (dbRes) => {
+              if (dbRes.data && dbRes.data.length > 0) {
+                const userInfo = dbRes.data[0]; // 发现是个老用户，直接静默登录拦截去注册页
+                wx.setStorageSync('cachedUserInfo', { userInfo: userInfo, timestamp: Date.now() });
+                wx.setStorageSync('loginStatus', true);
+                this.setData({ isRegistered: true, isLoading: false, userInfo: userInfo });
+                wx.showToast({ title: '欢迎回来', icon: 'success' });
+              } else {
+                this.setData({ isLoading: false }); // 数据库里没这个人，放行去注册页
+                wx.navigateTo({ url: '/pages/register/register' });
+              }
+            }
+          });
+        }
+      }
     });
   },
 
@@ -212,7 +224,51 @@ Page({
       url: '/pages/user-tags/user-tags'
     });
   },
+  // 增加/替换以下函数
+  navigateToUserCard() {
+    const openid = this.data.userInfo._openid || this.data.userInfo.openid;
+    wx.navigateTo({
+      url: `/pages/usercard/usercard?openid=${openid}`
+    });
+  },
 
+  chooseAvatar() {
+    // 1. 复刻编辑页逻辑：使用 chooseImage 获取本地临时路径 
+    wx.chooseImage({
+      count: 1,
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        const tempPath = res.tempFilePaths[0]; // 获取选择的路径 
+        
+        // 2. 立即更新界面预览，消除“卡顿感”
+        this.setData({
+          'userInfo.avatarUrl': tempPath
+        });
+
+        // 3. 后台静默同步数据库 
+        const db = wx.cloud.database();
+        db.collection('users').doc(this.data.userInfo._id).update({
+          data: {
+            avatarUrl: tempPath
+          },
+          success: () => {
+            // 4. 同步更新本地缓存，确保刷新不丢失 [cite: 109]
+            const newUserInfo = { ...this.data.userInfo, avatarUrl: tempPath };
+            wx.setStorageSync('cachedUserInfo', { 
+              userInfo: newUserInfo, 
+              timestamp: Date.now() 
+            });
+            wx.showToast({ title: '更换成功', icon: 'success' });
+          },
+          fail: (err) => {
+            console.error('更新头像失败', err);
+            wx.showToast({ title: '保存失败', icon: 'none' });
+          }
+        });
+      }
+    });
+  },
   /**
    * 跳转到个人信息编辑页面
    */

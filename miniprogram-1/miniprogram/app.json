@@ -1,6 +1,5 @@
 {
   "pages": [
-    "pages/register/register",
     "pages/lobby/lobby",
     "pages/scripts/scripts",
     "pages/profile/profile",
@@ -11,8 +10,8 @@
     "pages/user-tags/user-tags",
     "pages/detail/detail",
     "pages/usercard/usercard",
-    "pages/script",
-    "pages/detail"
+    "pages/teamup-detail/teamup-detail",
+    "pages/register/register"
   ],
   "window": {
     "backgroundTextStyle": "light",

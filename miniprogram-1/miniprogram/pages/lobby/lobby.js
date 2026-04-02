@@ -121,6 +121,8 @@ Page({
 
   viewTeamup(e) {
     const teamupId = e.currentTarget.dataset.id;
-    wx.showToast({ title: '拼车详情页还在开发中...', icon: 'none' })
+    wx.navigateTo({
+      url: `/pages/teamup-detail/teamup-detail?id=${teamupId}`
+    });
   }
 })

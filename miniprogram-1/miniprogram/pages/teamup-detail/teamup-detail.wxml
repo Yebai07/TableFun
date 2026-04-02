@@ -1,0 +1,49 @@
+<view class="page-container" wx:if="{{!isLoading}}">
+  
+  <view class="script-card">
+    <image class="cover" src="{{teamup.bannerUrl}}" mode="aspectFill"></image>
+    <view class="info">
+      <text class="title">{{teamup.scriptTitle}}</text>
+      <text class="time">开始时间：{{teamup.startTime}}</text>
+      <text class="lock">🔒 锁车规则：{{teamup.lockRule}}</text>
+      <text class="notes" wx:if="{{teamup.merchantNotes}}">备注：{{teamup.merchantNotes}}</text>
+    </view>
+  </view>
+
+  <view class="players-section">
+    <view class="section-header">
+      <text class="title">上车玩家</text>
+      <text class="count">{{teamup.currentPlayers}}/{{teamup.targetPlayers}}</text>
+    </view>
+
+    <view class="avatar-grid">
+      <block wx:for="{{teamup.joinedPlayers}}" wx:key="openid">
+        <view class="player-slot filled" bindtap="viewUserCard" data-openid="{{item.openid}}">
+          <image class="avatar" src="{{item.avatarUrl}}" mode="aspectFill"></image>
+          <view class="creator-badge" wx:if="{{item.isCreator}}">发起人</view>
+        </view>
+      </block>
+      
+      <block wx:for="{{emptySlots}}" wx:key="*this">
+        <view class="player-slot empty">
+          <text class="empty-text">待加入</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+  <view class="bottom-bar">
+    <button class="btn-disabled" wx:if="{{isLocked && !hasJoined}}">已锁定，停止招募</button>
+    
+    <button class="btn-disabled" wx:elif="{{isFull && !hasJoined}}">满车，停止招募</button>
+    
+    <button class="btn-quit" wx:elif="{{hasJoined}}" bindtap="quitTeamup">
+      {{isLocked ? '已锁车 (跳车将扣信用分)' : '退出拼车'}}
+    </button>
+    
+    <button class="btn-primary" wx:else bindtap="joinTeamup">立即上车</button>
+  </view>
+
+</view>

@@ -28,6 +28,7 @@ Page({
           wx.removeStorageSync('userInfo');
           wx.removeStorageSync('cachedUserInfo');
           wx.removeStorageSync('loginStatus');
+          wx.setStorageSync('isManualLogout', true);
           
           // 执行退出登录操作
           wx.showToast({
