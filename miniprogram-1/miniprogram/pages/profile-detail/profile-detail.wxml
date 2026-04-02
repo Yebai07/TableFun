@@ -1,0 +1,73 @@
+<!--pages/profile-detail/profile-detail.wxml-->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="back-btn" bindtap="navigateBack">
+      <text class="back-arrow">←</text>
+    </view>
+    <view class="nav-title">个人主页</view>
+    <view class="settings-btn" bindtap="navigateToSettings">
+      <text class="settings-icon">⚙️</text>
+    </view>
+  </view>
+  
+  <!-- 头像和基本信息 -->
+  <view class="profile-header">
+    <view class="avatar-container">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+    </view>
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickname || '用户'}}</text>
+      <text class="user-id">ID: {{userInfo._id.substring(0, 6) || '123456'}}</text>
+      <text class="user-bio" wx:if="{{userInfo && userInfo.bio}}">{{userInfo.bio}}</text>
+    </view>
+  </view>
+  
+  <!-- 数据统计行 -->
+  <view class="stats-container">
+    <view class="stat-item" bindtap="navigateToUserTags">
+      <view class="stat-circle">
+        <text class="stat-number">{{userInfo.creditScore || 0}}</text>
+        <text class="stat-label">信用分</text>
+      </view>
+    </view>
+    <view class="stat-item" bindtap="navigateToUserTags">
+      <view class="stat-circle">
+        <text class="stat-number">{{userInfo.tags_self && userInfo.tags_self.length || 0}}</text>
+        <text class="stat-label">标签</text>
+      </view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-circle">
+        <text class="stat-number">{{dynamicCount}}</text>
+        <text class="stat-label">动态</text>
+      </view>
+    </view>
+  </view>
+  
+  <!-- 功能入口按钮 -->
+  <view class="feature-container">
+    <view class="feature-item" bindtap="viewParticipatedScripts">
+      <text class="feature-text">参与的剧本</text>
+      <text class="feature-arrow">→</text>
+    </view>
+    <view class="feature-item" bindtap="viewMedals">
+      <text class="feature-text">我的勋章</text>
+      <text class="feature-arrow">→</text>
+    </view>
+    <view class="feature-item" bindtap="viewBio">
+      <text class="feature-text">个人签名</text>
+      <text class="feature-arrow">→</text>
+    </view>
+  </view>
+  
+  <!-- 底部操作栏 -->
+  <view class="action-container">
+    <button class="action-btn evaluate-btn" bindtap="evaluateUser">
+      <text class="action-btn-text">评价TA</text>
+    </button>
+    <button class="action-btn chat-btn" bindtap="chatWithUser">
+      <text class="action-btn-text">和TA聊</text>
+    </button>
+  </view>
+</view>

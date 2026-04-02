@@ -1,0 +1,30 @@
+<!-- pages/participated-scripts/participated-scripts.wxml -->
+<view class="container">
+  <view class="nav-bar">
+    <view class="nav-title">参与的剧本</view>
+  </view>
+
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <view class="loading">加载中...</view>
+  </view>
+
+  <view wx:elif="{{scripts && scripts.length === 0}}" class="empty-container">
+    <text>尚未参与任何剧本</text>
+  </view>
+
+  <view wx:else class="list-container">
+    <block wx:for="{{scripts}}" wx:for-item="item" wx:key="_id">
+      <view class="script-item" bindtap="openScriptDetail" data-id="{{item._id}}">
+        <view class="script-row">
+          <text class="script-title">{{item.title}}</text>
+          <text class="script-status {{item.status == 'started' ? 'status-started' : 'status-forming'}}">{{item.statusText}}</text>
+        </view>
+        <view class="script-meta-row">
+          <text class="script-meta">参与时间: {{item.joinedAt}}</text>
+          <text class="script-author" wx:if="{{item.author}}">作者: {{item.author}}</text>
+        </view>
+      </view>
+    </block>
+  </view>
+</view>
+

@@ -1,0 +1,241 @@
+/* pages/profile-detail/profile-detail.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #f8f9fa 0%, #e6f7ff 100%);
+  padding-bottom: 30rpx;
+}
+
+/* 顶部导航栏 */
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100rpx;
+  padding: 0 30rpx;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.back-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.back-btn:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.back-arrow {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.nav-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.settings-btn {
+  width: 60rpx;
+  height: 60rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.settings-btn:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.settings-icon {
+  font-size: 32rpx;
+}
+
+.user-bio {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 10rpx;
+  text-align: center;
+  max-width: 80%;
+  line-height: 1.4;
+}
+
+/* 头像和基本信息 */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40rpx 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  margin: 20rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.avatar-container {
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 20rpx;
+  border: 4rpx solid #fff;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nickname {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.user-id {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 数据统计行 */
+.stats-container {
+  display: flex;
+  justify-content: space-around;
+  padding: 30rpx 20rpx;
+  background-color: rgba(255, 255, 255, 0.8);
+  margin: 20rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 0;
+}
+
+.stat-item:active {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 15rpx;
+}
+
+.stat-circle {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  border: 2rpx dashed #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #fafafa;
+}
+
+.stat-number {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 5rpx;
+}
+
+.stat-label {
+  font-size: 20rpx;
+  color: #999;
+}
+
+/* 功能入口按钮 */
+.feature-container {
+  background-color: rgba(255, 255, 255, 0.8);
+  margin: 20rpx;
+  border-radius: 20rpx;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+}
+
+.feature-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.feature-item:last-child {
+  border-bottom: none;
+}
+
+.feature-item:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.feature-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+.feature-arrow {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 底部操作栏 */
+.action-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 20rpx;
+  margin-top: 40rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 80rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 28rpx;
+  margin: 0 10rpx;
+  border: none;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.1);
+}
+
+.evaluate-btn {
+  background-color: #ffd700;
+  color: #333;
+}
+
+.chat-btn {
+  background-color: #b3e5fc;
+  color: #333;
+}
+
+.action-btn:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.action-btn-text {
+  font-weight: bold;
+  font-size: 28rpx;
+}
