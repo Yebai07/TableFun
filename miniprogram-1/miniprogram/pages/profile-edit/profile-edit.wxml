@@ -1,0 +1,62 @@
+<view class="page-container">
+  <view class="nav-bar">
+    <view class="nav-title">编辑资料</view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-item disabled" bindtap="tipAvatar">
+      <text class="label">头像</text>
+      <view class="right-content">
+        <image class="avatar-preview" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <text class="arrow">></text>
+      </view>
+    </view>
+
+    <view class="form-item">
+      <text class="label">昵称</text>
+      <input class="input-control" placeholder="请输入昵称" value="{{nickname}}" bindinput="inputNickname" />
+    </view>
+
+    <view class="form-item">
+      <text class="label">性别</text>
+      <radio-group class="radio-group" bindchange="chooseGender">
+        <label class="radio-label"><radio value="1" checked="{{gender == 1}}" color="#333"/> 男</label>
+        <label class="radio-label"><radio value="2" checked="{{gender == 2}}" color="#333"/> 女</label>
+      </radio-group>
+    </view>
+
+    <view class="form-item">
+      <text class="label">MBTI</text>
+      <input class="input-control" placeholder="如: ENFP" value="{{mbti}}" bindinput="inputMbti" />
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-item-column">
+      <text class="label">个性签名</text>
+      <textarea class="textarea-control" placeholder="介绍一下自己吧..." value="{{bio}}" bindinput="inputBio" maxlength="50"></textarea>
+    </view>
+  </view>
+
+  <view class="form-group">
+    <view class="form-item-column">
+      <text class="label">我的标签 (最多选5个)</text>
+      <view class="tag-pool">
+        <block wx:for="{{processedTags}}" wx:key="name">
+          <view class="tag-chip {{item.selected ? 'active' : ''}}" data-tag="{{item.name}}" bindtap="selectTag">
+            {{item.name}}
+          </view>
+        </block>
+      </view>
+      
+      <view class="custom-tag-box">
+        <input class="custom-input" placeholder="自定义标签" value="{{customTag}}" bindinput="inputCustomTag"/>
+        <button class="btn-add-tag" bindtap="addCustomTag">添加</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer-bar">
+    <button class="btn-save" bindtap="saveChanges">保存修改</button>
+  </view>
+</view>

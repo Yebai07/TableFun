@@ -1,0 +1,69 @@
+<view class="page-container" wx:if="{{!isLoading}}">
+  
+  <view class="header-bg">
+    <view class="user-main">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <text class="nickname">{{userInfo.nickname}}</text>
+      <view class="id-badge">ID: {{displayId}}</view>
+    </view>
+  </view>
+
+  <view class="stats-card">
+    <view class="stat-item">
+      <text class="num">{{userInfo.creditScore || 800}}</text>
+      <text class="label">信用分</text>
+    </view>
+    <view class="divider"></view>
+    <view class="stat-item">
+      <text class="num">{{userInfo.tags_self.length || 0}}</text>
+      <text class="label">标签数</text>
+    </view>
+    <view class="divider"></view>
+    <view class="stat-item">
+      <text class="num">23</text>
+      <text class="label">动态</text>
+    </view>
+  </view>
+
+  <view class="content-section">
+    
+    <view class="tag-group">
+      <view class="group-header">
+        <text class="group-title">TA眼中的自己</text>
+        <view class="title-line"></view>
+      </view>
+      <view class="tag-list">
+        <block wx:for="{{userInfo.tags_self}}" wx:key="*this">
+          <text class="tag-pill self-tag">{{item}}</text>
+        </block>
+      </view>
+    </view>
+
+    <view class="tag-group">
+      <view class="group-header">
+        <text class="group-title">别人眼中的TA</text>
+        <view class="title-line"></view>
+      </view>
+      <view class="tag-list">
+        <block wx:for="{{userInfo.tags_others}}" wx:key="name">
+          <view class="tag-pill-other">
+            <text class="tag-name">{{item.name}}</text>
+            <text class="tag-count">x{{item.count}}</text>
+          </view>
+        </block>
+      </view>
+    </view>
+    
+  </view>
+
+  <view class="footer-bar">
+    <block wx:if="{{isMe}}">
+      <button class="btn-primary full-width" bindtap="onEditProfile">编辑个人资料</button>
+    </block>
+    
+    <block wx:else>
+      <button class="btn-secondary" bindtap="onEvaluate">评价TA</button>
+      <button class="btn-primary" bindtap="onChat">发起私聊</button>
+    </block>
+  </view>
+</view>

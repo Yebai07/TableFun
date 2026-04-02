@@ -1,0 +1,226 @@
+/* pages/detail.wxss */page {
+  background-color: #f8f9fa;
+}
+
+/* 顶部大图 */
+.banner {
+  width: 100%;
+  height: 560rpx;
+  display: block;
+}
+
+/* 详情卡片（向上浮动遮盖图片边缘） */
+.info-section {
+  background: #ffffff;
+  padding: 40rpx 30rpx;
+  border-radius: 32rpx 32rpx 0 0;
+  margin-top: -32rpx; /* 关键：向上偏移，盖住图片 */
+  position: relative;
+  min-height: 600rpx;
+}
+
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.title {
+  font-size: 44rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.price {
+  font-size: 40rpx;
+  font-weight: bold;
+  color: #ff5a5f;
+  margin-left: 20rpx;
+}
+
+.tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-bottom: 40rpx;
+}
+
+.tag {
+  font-size: 26rpx;
+  color: #5b86e5;
+  background: rgba(91, 134, 229, 0.1);
+  padding: 8rpx 20rpx;
+  border-radius: 12rpx;
+}
+
+.desc-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20rpx;
+  display: block;
+}
+
+.desc-content {
+  font-size: 28rpx;
+  color: #666;
+  line-height: 1.8;
+  text-align: justify;
+}
+
+/* 底部操作栏 */
+.bottom-space {
+  height: 160rpx; /* 防止内容被底部按钮挡住 */
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  padding: 20rpx 30rpx;
+  box-sizing: border-box;
+  box-shadow: 0 -4rpx 20rpx rgba(0, 0, 0, 0.05);
+  padding-bottom: calc(20rpx + env(safe-area-inset-bottom)); /* 适配苹果全面屏底部黑条 */
+}
+
+.btn-primary {
+  background: #333333; /* 酷炫的黑色按钮 */
+  color: #ffffff;
+  border-radius: 50rpx;
+  font-size: 32rpx;
+  font-weight: bold;
+  width: 100%;
+  padding: 24rpx 0;
+  line-height: 1.5;
+}
+
+.loading-state {
+  text-align: center;
+  padding-top: 40vh;
+  color: #999;
+}
+
+/* ===== 弹窗样式 ===== */
+/* ===== 弹窗样式 (完美适配新结构) ===== */
+
+/* 弹窗外层包装 */
+.popup-wrapper {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* 让内容沉到底部 */
+}
+
+/* 黑色半透明遮罩 */
+.popup-mask {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* 弹窗白色主体 */
+.popup-box {
+  background: #ffffff;
+  border-radius: 40rpx 40rpx 0 0;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  padding-bottom: env(safe-area-inset-bottom);
+  /* 使用 keyframes 解决 wx:if 带来的动画失效问题 */
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* 弹窗头部 */
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 40rpx 40rpx 20rpx;
+}
+.popup-title { font-size: 36rpx; font-weight: bold; color: #333; }
+.close-btn { font-size: 50rpx; color: #999; line-height: 1; padding: 0 10rpx; }
+
+/* 滚动区域 */
+.popup-scroll-area {
+  max-height: 60vh;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+}
+
+/* 表单项布局 */
+.form-group {
+  background: transparent;
+}
+.form-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+.form-item-column {
+  display: flex;
+  flex-direction: column;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
+.label {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+/* 日期与时间选择器专属 */
+.datetime-picker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+}
+.datetime-picker .divider {
+  margin: 0 20rpx;
+  color: #eee;
+}
+.datetime-picker .value {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+}
+.datetime-picker .placeholder {
+  font-size: 32rpx;
+  color: #ccc;
+}
+
+/* 文本域 */
+.textarea-control {
+  width: 100%;
+  height: 160rpx;
+  background: #f8f9fa;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}
+
+/* 弹窗底部按钮区 */
+.popup-footer {
+  padding: 20rpx 40rpx 40rpx;
+}
+/* 复用了原有的全宽按钮样式，加一点圆角 */
+.full-width {
+  width: 100% !important;
+  border-radius: 50rpx !important;
+}

@@ -1,0 +1,43 @@
+<view class="page-container">
+  
+  <view class="tab-bar">
+    <view class="tab-item {{currentTab === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="{{0}}">我发起的</view>
+    <view class="tab-item {{currentTab === 1 ? 'active' : ''}}" bindtap="switchTab" data-index="{{1}}">我加入的</view>
+  </view>
+
+  <view class="list-container">
+    <view class="loading-state" wx:if="{{isLoading}}">加载行程中...</view>
+    
+    <block wx:else>
+      <view class="empty-state" wx:if="{{(currentTab === 0 && createdList.length === 0) || (currentTab === 1 && joinedList.length === 0)}}">
+        <text>暂无相关行程记录\n快去剧本大厅看看吧！</text>
+      </view>
+
+      <view class="teamup-list" wx:else>
+        <block wx:for="{{currentTab === 0 ? createdList : joinedList}}" wx:key="_id">
+          <view class="teamup-card {{item.isPast ? 'past' : ''}}" bindtap="goToDetail" data-id="{{item._id}}">
+            
+            <view class="card-header">
+              <text class="time-text">🕒 开始：{{item.startTime}}</text>
+              <text class="status-tag {{item.isPast ? 'past' : 'active'}}">{{item.isPast ? '已结束' : '招募/锁车中'}}</text>
+            </view>
+            
+            <view class="script-info">
+              <image class="script-cover" src="{{item.bannerUrl}}" mode="aspectFill"></image>
+              <view class="script-text">
+                <text class="script-title">{{item.scriptTitle}}</text>
+                <view class="script-tags">
+                  <text class="tag-type" wx:if="{{item.scriptType}}">{{item.scriptType}}</text>
+                  <text class="tag-players" wx:if="{{item.scriptPlayers}}">{{item.scriptPlayers}}</text>
+                </view>
+                <text class="players-progress">当前人数：{{item.currentPlayers}}/{{item.targetPlayers}}</text>
+              </view>
+            </view>
+
+          </view>
+        </block>
+      </view>
+    </block>
+  </view>
+
+</view>

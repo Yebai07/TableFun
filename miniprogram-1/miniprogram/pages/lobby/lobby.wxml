@@ -1,0 +1,67 @@
+<view class="page-container">
+  
+  <view class="sticky-header">
+    <view class="search-box">
+      <icon type="search" size="16" color="#999"></icon>
+      <input class="search-input" placeholder="搜索剧本名称..." value="{{searchKeyword}}" bindinput="onSearchInput" />
+      <icon type="clear" size="16" color="#ccc" wx:if="{{searchKeyword.length > 0}}" bindtap="clearSearch"></icon>
+    </view>
+
+    <view class="filter-bar">
+      <picker mode="selector" range="{{typeOptions}}" bindchange="onTypeChange">
+        <view class="filter-item">
+          <text class="filter-text">{{currentType}}</text>
+          <text class="icon-triangle">▼</text>
+        </view>
+      </picker>
+
+      <view class="filter-item" bindtap="toggleTimeSort">
+        <text class="filter-text">开始时间</text>
+        <text class="icon-sort">{{timeSortAsc ? '↑' : '↓'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="loading-state" wx:if="{{isLoading}}">加载中...</view>
+  
+  <view class="empty-state" wx:elif="{{teamupList.length === 0}}">
+    <text>当前暂无符合条件的拼车局\n去剧本大厅发起一个吧！</text>
+  </view>
+
+  <view class="teamup-list" wx:else>
+    <block wx:for="{{teamupList}}" wx:key="_id">
+      <view class="teamup-card">
+        <view class="card-header">
+          <text class="time-text">🕒 开始：{{item.startTime}}</text>
+          
+          <text class="status-tag locked" wx:if="{{item.isLocked}}">已锁定</text>
+        </view>
+        
+        <view class="script-info">
+          <image class="script-cover" src="{{item.bannerUrl}}" mode="aspectFill"></image>
+          <view class="script-text">
+            <text class="script-title">{{item.scriptTitle}}</text>
+            
+            <view class="script-tags">
+              <text class="tag-type" wx:if="{{item.scriptType}}">{{item.scriptType}}</text>
+              <text class="tag-players" wx:if="{{item.scriptPlayers}}">{{item.scriptPlayers}}</text>
+            </view>
+
+            <view class="card-tag-row">
+              <text class="lock-status {{item.isLocked ? 'locked' : 'counting'}}">{{item.lockStatusText}}</text>
+            </view>
+          </view>
+        </view>
+
+        <view class="card-footer">
+          <view class="player-count">
+            <text class="count-highlight">{{item.currentPlayers}}</text>
+            <text class="count-total">/{{item.targetPlayers}} 人</text>
+          </view>
+          <button class="btn-join" bindtap="viewTeamup" data-id="{{item._id}}">查看详情</button>
+        </view>
+        
+      </view>
+    </block>
+  </view>
+</view>
