@@ -2,127 +2,119 @@ const db = wx.cloud.database()
 
 Page({
   data: {
-    allTeamups: [], 
-    teamupList: [], 
-    isLoading: true,
-
-    searchKeyword: '',
-    typeOptions: ['全部', '情感', '推理', '欢乐', '机制', '惊悚'],
-    currentType: '全部',
-    timeSortAsc: true 
+    timer: null,
+    // --- 补回筛选相关数据 ---
+    typeOptions: ['全部', '情感', '硬核', '欢乐', '阵营', '惊悚', '机制'],
+    currentType: '全部类型'
   },
 
   onShow() {
-    this.fetchTeamups()
+    this.fetchTeamupList()
   },
 
-  onPullDownRefresh() {
-    this.fetchTeamups().then(() => { wx.stopPullDownRefresh() })
+  onHide() {
+    // 页面不可见时销毁定时器，节省性能
+    if (this.data.timer) clearInterval(this.data.timer)
   },
 
-  fetchTeamups() {
-    return new Promise((resolve, reject) => {
-      this.setData({ isLoading: true })
-      db.collection('teamups').where({ status: 'recruiting' }).orderBy('createTime', 'desc').get()
-        .then(res => {
-          this.setData({ allTeamups: res.data })
-          this.processData() 
-          resolve()
-        })
-        .catch(err => {
-          console.error('获取拼车列表失败', err)
-          this.setData({ isLoading: false })
-          reject(err)
-        })
+  onUnload() {
+    if (this.data.timer) clearInterval(this.data.timer)
+  },
+
+  fetchTeamupList() {
+    db.collection('teamups').orderBy('createTime', 'desc').get().then(res => {
+      const now = new Date().getTime();
+      
+      const filteredList = res.data.filter(item => {
+        // 1. 时间过滤逻辑 (防止流局僵尸车)
+        const startTimeStr = item.startTime.replace(/-/g, '/');
+        const startTimestamp = new Date(startTimeStr).getTime();
+        const isExpired = (now >= startTimestamp) && (item.currentPlayers < item.targetPlayers);
+        
+        // 2. 类型过滤逻辑
+        const typeMatch = this.data.currentType === '全部类型' || item.scriptType === this.data.currentType;
+
+        return !isExpired && typeMatch; // 只有没过期且类型匹配的才显示
+      });
+
+      // 计算锁车状态（复用之前的函数）
+      const list = this.calculateAllLockStatus(filteredList);
+      
+      this.setData({ teamupList: list });
+      // ... 定时器逻辑保持不变 ...
     })
   },
-
-  onSearchInput(e) {
-    this.setData({ searchKeyword: e.detail.value });
-    this.processData();
-  },
-
-  clearSearch() {
-    this.setData({ searchKeyword: '' });
-    this.processData();
-  },
-
+  /**
+   * 切换剧本类型筛选
+   */
   onTypeChange(e) {
-    const selectedType = this.data.typeOptions[e.detail.value];
-    this.setData({ currentType: selectedType });
-    this.processData(); 
-  },
-
-  toggleTimeSort() {
-    this.setData({ timeSortAsc: !this.data.timeSortAsc });
-    this.processData(); 
-  },
-
-  processData() {
-    let list = [...this.data.allTeamups]; 
-
-    // 1. 模糊搜索
-    if (this.data.searchKeyword.trim() !== '') {
-      const keyword = this.data.searchKeyword.trim();
-      list = list.filter(item => 
-        item.scriptTitle && item.scriptTitle.includes(keyword)
-      );
-    }
-
-    // 2. 类型筛选
-    if (this.data.currentType !== '全部') {
-      list = list.filter(item => 
-        item.scriptType && item.scriptType.includes(this.data.currentType)
-      );
-    }
-
-    // 3. 时间排序
-    list.sort((a, b) => {
-      let timeA = new Date(a.startTime.replace(/-/g, '/')).getTime() || 0;
-      let timeB = new Date(b.startTime.replace(/-/g, '/')).getTime() || 0;
-      return this.data.timeSortAsc ? (timeA - timeB) : (timeB - timeA);
+    const index = e.detail.value;
+    const selectedType = this.data.typeOptions[index];
+    
+    this.setData({
+      currentType: selectedType === '全部' ? '全部类型' : selectedType
     });
 
-    // 4. 计算是否已锁定 & 文案无痕替换
-    const now = new Date().getTime(); // 获取用户当前的现实时间戳
+    // 重新拉取并筛选列表
+    this.fetchTeamupList();
+  },
 
-    list = list.map(item => {
-      let isLocked = false;
-      let startTimestamp = new Date(item.startTime.replace(/-/g, '/')).getTime();
-
-      if (item.lockRule) {
-        if (item.lockRule.includes('不限')) {
-          isLocked = false;
-        } else if (item.lockRule.includes('即锁')) {
-          // 如果是“开始即锁”，比较当前时间是否大于等于发车时间
-          isLocked = now >= startTimestamp;
-        } else {
-          // 用正则提取出“前12小时”里的数字 12
-          const match = item.lockRule.match(/前(\d+)小时/);
-          if (match && match[1]) {
-            const hours = parseInt(match[1], 10);
-            // 计算出锁车的具体时间戳 (发车时间 - 规定小时数的毫秒值)
-            const lockTimestamp = startTimestamp - (hours * 60 * 60 * 1000);
-            // 如果当前时间已经超过了锁车时间，则标记为已锁定
-            isLocked = now >= lockTimestamp;
-          }
-        }
+  /**
+   * 批量计算锁车文本的工具函数
+   */
+  calculateAllLockStatus(list) {
+    const now = new Date().getTime();
+    return list.map(item => {
+      const startTimeStr = item.startTime.replace(/-/g, '/');
+      const startTimestamp = new Date(startTimeStr).getTime();
+      
+      // 1. 优先判定：人满即锁
+      const isFull = item.currentPlayers >= item.targetPlayers;
+      if (item.lockWhenFull && isFull) {
+        item.isLocked = true;
+        item.lockStatusText = "已满员锁车";
+        return item;
       }
 
-      return {
-        ...item,
-        displayLockRule: item.lockRule ? item.lockRule.replace(/发车/g, '开始') : '',
-        isLocked: isLocked // 将计算结果新增为一个字段，供 wxml 使用
-      };
-    });
+      // 2. 判定：时间锁车
+      // 兼容老数据（如果没有lockHours，默认当做0）
+      const hours = item.lockHours || 0; 
+      let deadline = startTimestamp - (hours * 60 * 60 * 1000);
 
-    this.setData({ teamupList: list, isLoading: false });
+      const diff = deadline - now;
+      if (hours === 0 && diff > 0) {
+        // 选了不锁定，且还没发车
+        item.isLocked = false;
+        item.lockStatusText = "招募中";
+      } else if (diff <= 0) {
+        // 过期了
+        item.lockStatusText = "已锁车";
+        item.isLocked = true;
+      } else {
+        // 倒计时计算
+        item.isLocked = false;
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        if (h > 24) {
+          item.lockStatusText = `距锁定还有${Math.floor(h/24)}天`;
+        } else if (h > 0) {
+          item.lockStatusText = `距锁定还有${h}小时${m}分`;
+        } else {
+          item.lockStatusText = `距锁定还有${m}分`;
+        }
+      }
+      return item;
+    });
   },
-
+  /**
+   * 跳转到拼车详情页
+   */
   viewTeamup(e) {
-    const teamupId = e.currentTarget.dataset.id;
+    const id = e.currentTarget.dataset.id;
+    if (!id) return;
+    
     wx.navigateTo({
-      url: `/pages/teamup-detail/teamup-detail?id=${teamupId}`
+      url: `/pages/teamup-detail/teamup-detail?id=${id}`
     });
-  }
+  },
 })

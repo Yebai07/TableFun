@@ -46,7 +46,22 @@ page { background-color: #f8f9fa; }
 .tag-type { background: rgba(91, 134, 229, 0.1); color: #5b86e5; }
 .tag-players { background: rgba(255, 90, 95, 0.1); color: #ff5a5f; }
 
-.lock-rule { font-size: 24rpx; color: #f5a623; }
+.lock-status {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-weight: bold;
+}
+/* 还在倒计时：柔和的蓝色或橙色 */
+.lock-status.counting {
+  background: rgba(255, 149, 0, 0.1);
+  color: #ff9500;
+}
+/* 已锁车：灰色 */
+.lock-status.locked {
+  background: #f0f0f0;
+  color: #999;
+}
 
 /* 底部操作区 */
 .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20rpx; border-top: 1rpx dashed #f0f0f0; }
@@ -54,3 +69,8 @@ page { background-color: #f8f9fa; }
 .count-highlight { font-size: 36rpx; font-weight: bold; color: #333; }
 .count-total { font-size: 28rpx; }
 .btn-join { margin: 0; padding: 0 40rpx; height: 64rpx; line-height: 64rpx; background: #333; color: #fff; font-size: 28rpx; border-radius: 32rpx; font-weight: bold; }
+/* 点击反馈 */
+.btn-join:active{
+  transform: scale(0.96); /* 按下去有个微小的缩放效果，手感更好 */
+  opacity: 0.9;
+}

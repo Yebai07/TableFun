@@ -105,61 +105,122 @@
 }
 
 /* ===== 弹窗样式 ===== */
-.mask {
+/* ===== 弹窗样式 (完美适配新结构) ===== */
+
+/* 弹窗外层包装 */
+.popup-wrapper {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
   z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end; /* 让内容沉到底部 */
 }
 
-.popup-panel {
-  position: fixed;
-  bottom: -100%; /* 默认隐藏在底部下面 */
-  left: 0; width: 100%;
-  background: #fff;
+/* 黑色半透明遮罩 */
+.popup-mask {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* 弹窗白色主体 */
+.popup-box {
+  background: #ffffff;
   border-radius: 40rpx 40rpx 0 0;
-  z-index: 101;
-  transition: bottom 0.3s ease; /* 丝滑的弹出动画 */
+  width: 100%;
+  position: relative;
+  z-index: 2;
   padding-bottom: env(safe-area-inset-bottom);
+  /* 使用 keyframes 解决 wx:if 带来的动画失效问题 */
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
 }
 
-.popup-panel.show {
-  bottom: 0; /* 激活时升起 */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
 }
 
+/* 弹窗头部 */
 .popup-header {
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 40rpx 40rpx 20rpx;
 }
-
 .popup-title { font-size: 36rpx; font-weight: bold; color: #333; }
-.popup-close { font-size: 40rpx; color: #999; padding: 10rpx; }
+.close-btn { font-size: 50rpx; color: #999; line-height: 1; padding: 0 10rpx; }
 
-.form-content { padding: 0 40rpx; }
+/* 滚动区域 */
+.popup-scroll-area {
+  max-height: 60vh;
+  padding: 0 40rpx;
+  box-sizing: border-box;
+}
 
+/* 表单项布局 */
+.form-group {
+  background: transparent;
+}
 .form-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 30rpx 0;
-  border-bottom: 1rpx solid #eee;
+  border-bottom: 1rpx solid #f5f5f5;
 }
-
+.form-item-column {
+  display: flex;
+  flex-direction: column;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f5f5f5;
+}
 .label {
-  font-size: 28rpx; color: #666; margin-bottom: 16rpx; display: block;
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
 }
 
-.picker-value {
-  font-size: 32rpx; color: #333; font-weight: 500;
+/* 日期与时间选择器专属 */
+.datetime-picker {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
 }
-.picker-value.placeholder { color: #ccc; font-weight: normal; }
-
-.textarea-input {
-  width: 100%; height: 160rpx; background: #f8f9fa;
-  border-radius: 16rpx; padding: 20rpx; box-sizing: border-box;
-  font-size: 28rpx; margin-top: 10rpx;
+.datetime-picker .divider {
+  margin: 0 20rpx;
+  color: #eee;
+}
+.datetime-picker .value {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+}
+.datetime-picker .placeholder {
+  font-size: 32rpx;
+  color: #ccc;
 }
 
-.popup-footer { padding: 40rpx; }
+/* 文本域 */
+.textarea-control {
+  width: 100%;
+  height: 160rpx;
+  background: #f8f9fa;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-sizing: border-box;
+  font-size: 28rpx;
+  margin-top: 20rpx;
+}
 
-.btn-submit {
-  background: #ff5a5f; color: #fff; border-radius: 50rpx;
-  font-size: 32rpx; font-weight: bold; width: 100%; padding: 24rpx 0;
+/* 弹窗底部按钮区 */
+.popup-footer {
+  padding: 20rpx 40rpx 40rpx;
+}
+/* 复用了原有的全宽按钮样式，加一点圆角 */
+.full-width {
+  width: 100% !important;
+  border-radius: 50rpx !important;
 }

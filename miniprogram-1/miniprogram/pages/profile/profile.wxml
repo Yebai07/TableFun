@@ -14,7 +14,6 @@
     
     <view class="header-section">
       <view class="nav-bar">
-        <text class="nav-title">我的</text>
         <view class="settings-btn" bindtap="navigateToSettings">
           <text class="settings-icon">⚙️</text>
         </view>

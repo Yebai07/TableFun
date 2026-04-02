@@ -34,80 +34,83 @@ Page({
   },
 
   /**
-   * 生命周期函数--监听页面显示
+   * 生命周期函数--监听页面显示 (防抖离线优先版)
    */
   onShow() {
-    const profileUpdated = wx.getStorageSync('profileUpdated'); // 检查是否有强制刷新标记
-    if (profileUpdated) {
-      wx.removeStorageSync('profileUpdated');
-      this.checkUserRegistered();
-      return;
-    }
-  
-    const isManualLogout = wx.getStorageSync('isManualLogout'); // 检查是否有手动退出登录的标记
+    // 1. 如果是手动退出登录，老老实实显示未注册
+    const isManualLogout = wx.getStorageSync('isManualLogout');
     if (isManualLogout) {
-      this.setData({
-        isRegistered: false,
-        isLoading: false,
-        userInfo: null,
-        cachedUserInfo: null
-      });
+      this.setData({ isRegistered: false, isLoading: false, userInfo: null });
       return;
     }
-  
-    const cachedData = wx.getStorageSync('cachedUserInfo'); // 检查本地缓存是否有效
+
     const loginStatus = wx.getStorageSync('loginStatus');
-  
-    if (loginStatus && cachedData) {
+    const cachedData = wx.getStorageSync('cachedUserInfo');
+
+    // 2. 核心优化：只要有缓存，立刻无条件展示主页！(断网/切页面绝对不掉线)
+    if (loginStatus && cachedData && cachedData.userInfo) {
+      this.setData({
+        isRegistered: true,
+        isLoading: false,
+        userInfo: cachedData.userInfo
+      });
+
+      // 3. 在后台静默判断是否需要更新数据 (过了5分钟，或者刚编辑过资料)
+      const profileUpdated = wx.getStorageSync('profileUpdated');
       const cacheTime = cachedData.timestamp || 0;
       const now = Date.now();
-      const cacheExpiry = 5 * 60 * 1000;
-      
-      if (now - cacheTime < cacheExpiry) {
-        this.setData({
-          isRegistered: true,
-          isLoading: false,
-          userInfo: cachedData.userInfo,
-          cachedUserInfo: cachedData.userInfo
-        });
-        return;
+
+      if (profileUpdated || (now - cacheTime > 5 * 60 * 1000)) {
+        wx.removeStorageSync('profileUpdated');
+        this.silentSyncData(); // 后台静默同步，不显示 Loading，失败了也不踢下线
       }
+      return;
     }
-  
-    this.checkUserRegistered(); // 最核心的修复：如果没有缓存，直接去数据库静默核对
+
+    // 4. 只有手机里完全没有缓存数据时，才走严格的 Loading 校验
+    this.checkUserRegistered();
   },
 
   /**
-   * 检查用户是否已注册（使用原生魔术变量，彻底抛弃云函数）
+   * 后台静默同步数据 (不管成功失败都不影响用户当前操作)
+   */
+  silentSyncData() {
+    const db = wx.cloud.database();
+    db.collection('users').where({ _openid: '{openid}' }).get({
+      success: (res) => {
+        if (res.data && res.data.length > 0) {
+          const userInfo = res.data[0];
+          // 拿到最新数据，悄悄覆盖缓存和页面
+          wx.setStorageSync('cachedUserInfo', { userInfo: userInfo, timestamp: Date.now() });
+          this.setData({ userInfo: userInfo });
+        }
+      }
+    });
+  },
+
+  /**
+   * 严格校验用户是否注册 (只在初次登录或无缓存时触发)
    */
   checkUserRegistered() {
     this.setData({ isLoading: true });
     const db = wx.cloud.database();
     
-    // 直接利用微信自带的魔术变量 '{openid}' 查询自己的数据
-    db.collection('users').where({
-      _openid: '{openid}' 
-    }).get({
+    db.collection('users').where({ _openid: '{openid}' }).get({
       success: (res) => {
         if (res.data && res.data.length > 0) {
-          // 数据库里有你的记录，静默完美登录！
+          // 查到了，静默登录
           const userInfo = res.data[0];
           wx.setStorageSync('cachedUserInfo', { userInfo: userInfo, timestamp: Date.now() });
           wx.setStorageSync('loginStatus', true);
-          this.setData({
-            isRegistered: true,
-            isLoading: false,
-            userInfo: userInfo,
-            cachedUserInfo: userInfo
-          });
-          console.log('静默登录成功！欢迎回来');
+          this.setData({ isRegistered: true, isLoading: false, userInfo: userInfo });
         } else {
-          // 数据库里真没你，显示注册按钮
+          // 确定没查到，显示未注册界面
           this.setData({ isRegistered: false, isLoading: false });
         }
       },
       fail: (err) => {
         console.error('查询数据库失败', err);
+        // 网络失败也别卡在 Loading，展示未注册界面让用户手动重试
         this.setData({ isRegistered: false, isLoading: false });
       }
     });

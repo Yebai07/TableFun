@@ -29,50 +29,53 @@
   <text>正在加载剧本档案...</text>
 </view>
 
-<view class="mask" wx:if="{{showPopup}}" bindtap="closePopup"></view>
-
-<view class="popup-panel {{showPopup ? 'show' : ''}}">
-  <view class="popup-header">
-    <text class="popup-title">发起拼本</text>
-    <text class="popup-close" bindtap="closePopup">✕</text>
-  </view>
-
-  <view class="form-content">
-    <view class="form-item">
-      <text class="label">发车日期</text>
-      <picker mode="date" value="{{formDate}}" start="{{today}}" bindchange="onDateChange">
-        <view class="picker-value {{formDate ? '' : 'placeholder'}}">
-          {{formDate || '请选择发车日期'}}
+<view class="popup-wrapper" wx:if="{{showPopup}}">
+      <view class="popup-mask" bindtap="closePopup"></view>
+      <view class="popup-box">
+        <view class="popup-header">
+          <text class="popup-title">发起拼本</text>
+          <text class="close-btn" bindtap="closePopup">×</text>
         </view>
-      </picker>
-    </view>
 
-    <view class="form-item">
-      <text class="label">发车时间</text>
-      <picker mode="time" value="{{formTime}}" bindchange="onTimeChange">
-        <view class="picker-value {{formTime ? '' : 'placeholder'}}">
-          {{formTime || '请选择发车时间'}}
+        <scroll-view class="popup-scroll-area" scroll-y="true">
+          <view class="form-group" style="margin: 0; box-shadow: none;">
+            
+            <view class="form-item">
+              <text class="label">开始时间</text>
+              <view class="datetime-picker">
+                <picker mode="date" value="{{formDate}}" start="{{today}}" bindchange="onDateChange">
+                  <text class="{{formDate ? 'value' : 'placeholder'}}">{{formDate || '日期'}}</text>
+                </picker>
+                <text class="divider">|</text>
+                <picker mode="time" value="{{formTime}}" start="{{timeStart}}" bindchange="onTimeChange">
+                  <text class="{{formTime ? 'value' : 'placeholder'}}">{{formTime || '时间'}}</text>
+                </picker>
+              </view>
+            </view>
+
+            <view class="form-item-column">
+              <text class="label">锁定时间</text>
+              <view class="slider-box" style="display: flex; align-items: center; margin-top: 20rpx;">
+                <slider min="0" max="24" value="{{lockHours}}" bindchange="onLockHoursChange" activeColor="#333" block-size="20" style="flex: 1; margin: 0 30rpx 0 0;" />
+                <text class="slider-text" style="font-size: 28rpx; color: #666; width: 140rpx; text-align: right;">{{lockHours === 0 ? '不锁定' : '开始前' + lockHours + '小时'}}</text>
+              </view>
+            </view>
+
+            <view class="form-item">
+              <text class="label">人满即刻锁定</text>
+              <switch checked="{{lockWhenFull}}" bindchange="onLockWhenFullChange" color="#333" />
+            </view>
+
+            <view class="form-item-column">
+              <text class="label">备注 (选填)</text>
+              <textarea class="textarea-control" placeholder="对队友说点什么吧..." value="{{notes}}" bindinput="onNoteInput"></textarea>
+            </view>
+
+          </view>
+        </scroll-view>
+
+        <view class="popup-footer">
+          <button class="btn-primary full-width" bindtap="submitTeamup">确定发起</button>
         </view>
-      </picker>
+      </view>
     </view>
-
-    <view class="form-item">
-      <text class="label">锁车规则 (防跳车)</text>
-      <picker mode="selector" range="{{lockOptions}}" value="{{lockIndex}}" bindchange="onLockChange">
-        <view class="picker-value">
-          {{lockOptions[lockIndex]}}
-        </view>
-      </picker>
-    </view>
-
-    <view class="form-item" style="border-bottom: none;">
-      <text class="label">搭子意向 / 备注</text>
-      <textarea class="textarea-input" placeholder="例如：需要全员硬核推土机，准时不鸽，可自带零食..." 
-                value="{{notes}}" bindinput="onNotesInput" cursor-spacing="100"></textarea>
-    </view>
-  </view>
-
-  <view class="popup-footer">
-    <button class="btn-submit" bindtap="submitTeamup">确认发起</button>
-  </view>
-</view>

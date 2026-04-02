@@ -47,7 +47,9 @@
               <text class="tag-players" wx:if="{{item.scriptPlayers}}">{{item.scriptPlayers}}</text>
             </view>
 
-            <text class="lock-rule">🔒 {{item.displayLockRule}}</text>
+            <view class="card-tag-row">
+              <text class="lock-status {{item.isLocked ? 'locked' : 'counting'}}">{{item.lockStatusText}}</text>
+            </view>
           </view>
         </view>
 

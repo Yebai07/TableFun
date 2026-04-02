@@ -7,7 +7,7 @@ Page({
   data: {
     nickname: '',
     avatarUrl: '/images/default-avatar.png',
-    bio: '这是我的个性签名...',
+    bio: '这个人很懒，什么也没留下……',
     gender: 1,
     mbti: 'ENTP',
     age: '',

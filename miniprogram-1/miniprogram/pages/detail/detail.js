@@ -1,115 +1,187 @@
 const db = wx.cloud.database()
 
-// 获取今天日期的格式化函数 (YYYY-MM-DD)，防止选以前的日期
-const getToday = () => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
 Page({
   data: {
+    showPopup: false, // <--- 新增这行，控制发车弹窗显示与隐藏
+    
+    // 基础表单数据
     scriptId: '',
-    scriptInfo: {},
-    isLoading: true,
-
-    // 弹窗表单状态
-    showPopup: false,
-    today: getToday(), 
+    scriptInfo: null, // 存放从数据库拉取回来的剧本信息
     formDate: '',
     formTime: '',
-    lockOptions: ['开始前2小时', '开始前12小时', '开始前24小时', '开始即锁 (极度严格)', '不限'],
-    lockIndex: 1, 
-    notes: ''
+    notes: '',
+
+    // 限制器数据
+    today: '',
+    timeStart: '00:00', 
+
+    // 锁车策略 
+    lockHours: 0,       
+    lockWhenFull: false, 
+
+    isLoading: false
   },
 
   onLoad(options) {
+    // 1. 初始化日期和时间限制
+    const todayStr = this.getToday();
+    const now = new Date();
+    const currentHourMin = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    
+    this.setData({ 
+      today: todayStr,
+      timeStart: currentHourMin 
+    });
+
+    // 2. 核心修复：拿到 ID 后，去数据库查询完整的剧本信息
     if (options.id) {
-      this.setData({ scriptId: options.id })
-      this.fetchScriptDetail(options.id)
+      this.setData({ scriptId: options.id });
+      this.fetchScriptDetail(options.id);
     }
   },
+  /**
+     * 打开/关闭发车弹窗
+     */
+  openPopup() {
+    this.setData({ showPopup: true });
+  },
 
+  closePopup() {
+    this.setData({ showPopup: false });
+  },
+  /**
+   * 恢复被误删的逻辑：去数据库拉取剧本详情
+   */
   fetchScriptDetail(id) {
+    wx.showLoading({ title: '加载剧本中...' });
     db.collection('scripts').doc(id).get().then(res => {
-      this.setData({ scriptInfo: res.data, isLoading: false })
+      wx.hideLoading();
+      this.setData({ scriptInfo: res.data });
     }).catch(err => {
-      console.error('获取剧本详情失败', err)
-      this.setData({ isLoading: false })
-    })
+      wx.hideLoading();
+      console.error('获取剧本信息失败', err);
+      wx.showToast({ title: '加载剧本失败', icon: 'none' });
+    });
   },
 
-  // ===== 弹窗控制与表单绑定 =====
-  openPopup() { this.setData({ showPopup: true }) },
-  closePopup() { this.setData({ showPopup: false }) },
-  
-  onDateChange(e) { this.setData({ formDate: e.detail.value }) },
-  onTimeChange(e) { this.setData({ formTime: e.detail.value }) },
-  onLockChange(e) { this.setData({ lockIndex: e.detail.value }) },
-  onNotesInput(e) { this.setData({ notes: e.detail.value }) },
+  /**
+   * 获取今天的日期字符串 (YYYY-MM-DD)
+   */
+  getToday() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = (now.getMonth() + 1).toString().padStart(2, '0');
+    const day = now.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  },
 
-  // ===== 核心提交逻辑 =====
-  submitTeamup() {
-    const { formDate, formTime, lockOptions, lockIndex, notes, scriptInfo, scriptId } = this.data;
+  /**
+   * 日期切换监听
+   */
+  onDateChange(e) {
+    const selectedDate = e.detail.value;
+    let newTimeStart = '00:00';
 
-    // 1. 必填项校验
-    if (!formDate || !formTime) {
-      return wx.showToast({ title: '请完善开始时间', icon: 'none' });
+    if (selectedDate === this.data.today) {
+      const now = new Date();
+      newTimeStart = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     }
 
-    // 2. 获取当前登录用户的真实信息 (核心修复点)
+    let newFormTime = this.data.formTime;
+    if (newFormTime && selectedDate === this.data.today && newFormTime < newTimeStart) {
+      newFormTime = '';
+      wx.showToast({ title: '已重置失效时间', icon: 'none' });
+    }
+
+    this.setData({ 
+      formDate: selectedDate, 
+      timeStart: newTimeStart,
+      formTime: newFormTime
+    });
+  },
+
+  /**
+   * 基础输入绑定
+   */
+  onTimeChange(e) { this.setData({ formTime: e.detail.value }) },
+  onNoteInput(e) { this.setData({ notes: e.detail.value }) },
+  onLockHoursChange(e) { this.setData({ lockHours: e.detail.value }) },
+  onLockWhenFullChange(e) { this.setData({ lockWhenFull: e.detail.value }) },
+
+  /**
+   * 提交发车逻辑
+   */
+  submitTeamup() {
+    const { formDate, formTime, lockHours, lockWhenFull, notes, scriptInfo, scriptId } = this.data;
+
+    if (!scriptInfo) {
+      return wx.showToast({ title: '剧本信息还在加载', icon: 'none' });
+    }
+
+    if (!formDate || !formTime) {
+      return wx.showToast({ title: '请选择开始时间', icon: 'none' });
+    }
+
+    const now = new Date().getTime();
+    const startTimestamp = new Date(`${formDate.replace(/-/g, '/')} ${formTime}`).getTime();
+    if (startTimestamp <= now) {
+      return wx.showToast({ title: '发车时间已失效，请重选', icon: 'none' });
+    }
+
     const cachedData = wx.getStorageSync('cachedUserInfo');
     if (!cachedData || !cachedData.userInfo) {
-      return wx.showModal({
-        title: '未登录',
-        content: '发起拼车前需要先完善个人资料哦',
-        success: (res) => {
-          if (res.confirm) wx.switchTab({ url: '/pages/profile/profile' })
-        }
-      });
+      return wx.showToast({ title: '请先登录', icon: 'none' });
     }
-    const me = cachedData.userInfo;
+    const user = cachedData.userInfo;
 
-    wx.showLoading({ title: '正在发车...' })
-    const targetNum = parseInt(scriptInfo.players) || 6; 
+    this.setData({ isLoading: true });
+    wx.showLoading({ title: '正在发起...', mask: true });
 
-    // 3. 写入数据库
-    db.collection('teamups').add({
-      data: {
-        scriptId: scriptId,
-        scriptTitle: scriptInfo.title,
-        bannerUrl: scriptInfo.bannerUrl, 
-        scriptType: scriptInfo.type, 
-        scriptPlayers: scriptInfo.players, 
-        targetPlayers: targetNum,
-        currentPlayers: 1,
-        status: "recruiting",
-        
-        startTime: `${formDate} ${formTime}`, 
-        lockRule: lockOptions[lockIndex],     
-        merchantNotes: notes,                 
-        
-        joinedPlayers: [
-          {
-            openid: me._openid || me.openid, // 写入发起人的真实 OpenID
-            nickname: me.nickname,           // 写入发起人的真实昵称
-            avatarUrl: me.avatarUrl || "/images/default-avatar.png", // 真实头像
-            isCreator: true
-          }
-        ],
-        createTime: db.serverDate()
-      }
-    }).then(res => {
-      wx.hideLoading()
-      wx.showToast({ title: '发车成功！', icon: 'success' })
-      this.closePopup()
+    // 构造写入数据库的数据模型
+    const teamupData = {
+      scriptId: scriptId,
+      scriptTitle: scriptInfo.title || scriptInfo.name, // 加了备用字段防报错
+      scriptType: scriptInfo.type,
+      scriptPlayers: scriptInfo.players,
+      bannerUrl: scriptInfo.bannerUrl || scriptInfo.cover, // 加了备用字段防报错
       
-      setTimeout(() => {
-        wx.switchTab({ url: '/pages/lobby/lobby' })
-      }, 1500)
-    }).catch(err => {
-      wx.hideLoading()
-      wx.showToast({ title: '发车失败', icon: 'error' })
-      console.error('发起拼本失败：', err)
-    })
+      startTime: `${formDate} ${formTime}`,
+      notes: notes,
+      
+      lockHours: lockHours,
+      lockWhenFull: lockWhenFull,
+      
+      targetPlayers: parseInt(scriptInfo.players) || 6,
+      currentPlayers: 1,
+      
+      joinedPlayers: [{
+        openid: user._openid || user.openid,
+        nickname: user.nickname,
+        avatarUrl: user.avatarUrl,
+        isCreator: true
+      }],
+      
+      createTime: db.serverDate(),
+      status: '招募中'
+    };
+
+    db.collection('teamups').add({
+      data: teamupData,
+      success: (res) => {
+        wx.hideLoading();
+        wx.showToast({ title: '发车成功！', icon: 'success' });
+        setTimeout(() => {
+          wx.switchTab({ url: '/pages/lobby/lobby' });
+        }, 1500);
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        wx.showToast({ title: '发车失败，请重试', icon: 'none' });
+        console.error('Submit Error:', err);
+      },
+      complete: () => {
+        this.setData({ isLoading: false });
+      }
+    });
   }
 })

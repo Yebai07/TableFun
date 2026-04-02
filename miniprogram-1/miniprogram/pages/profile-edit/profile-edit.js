@@ -393,5 +393,8 @@ Page({
    */
   onShareAppMessage() {
 
-  }
+  },
+  tipAvatar() {
+    wx.showToast({ title: '请在个人中心主页点击头像更换', icon: 'none' });
+  },
 })
