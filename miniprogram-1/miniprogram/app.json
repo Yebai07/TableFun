@@ -8,6 +8,7 @@
     "pages/profile-edit/profile-edit",
     "pages/settings/settings",
     "pages/user-tags/user-tags",
+    "pages/rate-user/rate-user",
     "pages/detail/detail",
     "pages/usercard/usercard",
     "pages/teamup-detail/teamup-detail",

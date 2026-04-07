@@ -64,6 +64,7 @@
   </view>
 
   <view class="footer-actions">
+    <button class="btn-evaluate" bindtap="navigateToRateUser">评价TA</button>
     <button class="btn-edit" bindtap="navigateToProfileEdit">修改资料</button>
   </view>
 </view>

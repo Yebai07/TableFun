@@ -107,11 +107,18 @@ Page({
   /**
    * 评价TA
    */
-  evaluateUser() {
-    // 评价功能逻辑
-    wx.showToast({
-      title: '评价功能开发中',
-      icon: 'none'
+  navigateToRateUser() {
+    wx.navigateTo({
+      url: '/pages/rate-user/rate-user'
+    });
+  },
+
+  /**
+   * 跳转到修改资料页面
+   */
+  navigateToProfileEdit() {
+    wx.navigateTo({
+      url: '/pages/profile-edit/profile-edit'
     });
   },
 
