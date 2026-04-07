@@ -64,8 +64,14 @@ page { background-color: #f8f9fa; }
   box-sizing: border-box; background: #fff;
   padding-bottom: calc(30rpx + env(safe-area-inset-bottom));
   box-shadow: 0 -4rpx 20rpx rgba(0,0,0,0.05);
+  display: flex;
+  gap: 20rpx;
+}
+.btn-evaluate {
+  background: #ffd700; color: #333; border-radius: 50rpx; font-size: 32rpx;
+  font-weight: bold; padding: 24rpx 0; flex: 1 !important;
 }
 .btn-edit {
   background: #333; color: #fff; border-radius: 50rpx; font-size: 32rpx;
-  font-weight: bold; padding: 24rpx 0; width: 100% !important;
+  font-weight: bold; padding: 24rpx 0; flex: 1 !important;
 }

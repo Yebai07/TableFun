@@ -1,0 +1,45 @@
+<view class="page-container">
+  <view class="header">
+    <view class="header-left" bindtap="navigateBack">
+      <text class="back-arrow">&lt;</text>
+    </view>
+    <view class="header-title">评价TA</view>
+    <view class="header-right"></view>
+  </view>
+
+  <view class="content">
+    <view class="section">
+      <view class="section-title">选择标签</view>
+      <view class="tag-container">
+        <view 
+          wx:for="{{processedTags}}" 
+          wx:key="index"
+          class="tag {{item.selected ? 'tag-selected' : ''}}"
+          bindtap="toggleTag"
+          data-index="{{index}}"
+        >
+          {{item.name}}
+          <view wx:if="{{item.selected}}" class="tag-check">✓</view>
+        </view>
+      </view>
+    </view>
+
+    <view class="section">
+      <view class="section-title">自定义标签</view>
+      <view class="custom-tag-input">
+        <input 
+          class="input" 
+          placeholder="输入自定义标签" 
+          placeholder-class="placeholder"
+          value="{{customTag}}"
+          bindinput="onCustomTagInput"
+        />
+        <button class="add-btn" bindtap="addCustomTag">添加</button>
+      </view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <button class="submit-btn" bindtap="submitEvaluation">提交评价</button>
+  </view>
+</view>
