@@ -1,0 +1,109 @@
+<!--
+  detail.wxml
+  修复点：
+  1. 整个页面用 isLoading 控制，防止按钮先于内容渲染闪出
+  2. 弹窗中「锁定时间」slider 区域用 wx:if 精准控制：
+     当「人满即锁」开关打开时隐藏 slider，避免隐藏范围出错
+-->
+<block wx:if="{{!isLoading && scriptInfo}}">
+  <image class="banner" src="{{scriptInfo.bannerUrl}}" mode="aspectFill"></image>
+
+  <view class="info-section">
+    <view class="title-row">
+      <text class="title">{{scriptInfo.title}}</text>
+      <text class="price">¥{{scriptInfo.price}}</text>
+    </view>
+
+    <view class="tags-row">
+      <text class="tag">{{scriptInfo.type}}</text>
+      <text class="tag">{{scriptInfo.players}}</text>
+    </view>
+
+    <view class="desc-box">
+      <text class="desc-title">剧本简介</text>
+      <text class="desc-content">{{scriptInfo.description}}</text>
+    </view>
+  </view>
+
+  <view class="bottom-space"></view>
+
+  <!-- 底部操作栏：只在页面完全就绪后显示，防止按钮闪烁 -->
+  <view class="bottom-bar">
+    <button class="btn-primary" bindtap="openPopup">发起拼本</button>
+  </view>
+</block>
+
+<!-- 加载中 -->
+<view class="loading-state" wx:elif="{{isLoading}}">
+  <text>正在加载剧本档案...</text>
+</view>
+
+<!-- 发起拼本弹窗 -->
+<view class="popup-wrapper" wx:if="{{showPopup}}">
+  <view class="popup-mask" bindtap="closePopup"></view>
+  <view class="popup-box">
+    <view class="popup-header">
+      <text class="popup-title">发起拼本</text>
+      <text class="close-btn" bindtap="closePopup">×</text>
+    </view>
+
+    <scroll-view class="popup-scroll-area" scroll-y="true">
+      <view class="form-group">
+
+        <!-- 开始时间 -->
+        <view class="form-item">
+          <text class="label">开始时间</text>
+          <view class="datetime-picker">
+            <picker mode="date" value="{{formDate}}" start="{{today}}" bindchange="onDateChange">
+              <text class="{{formDate ? 'value' : 'placeholder'}}">{{formDate || '日期'}}</text>
+            </picker>
+            <text class="divider">|</text>
+            <picker mode="time" value="{{formTime}}" start="{{timeStart}}" bindchange="onTimeChange">
+              <text class="{{formTime ? 'value' : 'placeholder'}}">{{formTime || '时间'}}</text>
+            </picker>
+          </view>
+        </view>
+
+        <!-- 人满即刻锁定开关（放在 slider 前面，开关状态决定 slider 是否显示） -->
+        <view class="form-item">
+          <text class="label">人满即刻锁定</text>
+          <switch checked="{{lockWhenFull}}" bindchange="onLockWhenFullChange" color="#333" />
+        </view>
+
+        <!-- 锁定时间 slider：当「人满即锁」已开启时隐藏，防止范围计算出错 -->
+        <view class="form-item-column" wx:if="{{!lockWhenFull}}">
+          <text class="label">提前锁定时间</text>
+          <view class="slider-box">
+            <slider
+              min="0" max="24"
+              value="{{lockHours}}"
+              bindchange="onLockHoursChange"
+              activeColor="#333"
+              block-size="20"
+              style="flex: 1; margin: 0 30rpx 0 0;"
+            />
+            <text class="slider-text">
+              {{lockHours === 0 ? '不锁定' : '开始前' + lockHours + '小时'}}
+            </text>
+          </view>
+        </view>
+
+        <!-- 备注 -->
+        <view class="form-item-column">
+          <text class="label">备注 (选填)</text>
+          <textarea
+            class="textarea-control"
+            placeholder="对队友说点什么吧..."
+            value="{{notes}}"
+            bindinput="onNoteInput"
+          ></textarea>
+        </view>
+
+      </view>
+    </scroll-view>
+
+    <view class="popup-footer">
+      <button class="btn-primary full-width" bindtap="submitTeamup">确定发起</button>
+    </view>
+  </view>
+</view>

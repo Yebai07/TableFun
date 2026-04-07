@@ -1,0 +1,72 @@
+<view class="page-container">
+
+  <view class="card script-card" bindtap="goToScriptDetail">
+    <image class="cover" src="{{teamup.bannerUrl}}" mode="aspectFill"></image>
+    <view class="script-info">
+      <text class="title">{{teamup.scriptTitle}}</text>
+      <view class="tags">
+        <text class="tag" wx:if="{{teamup.scriptType}}">{{teamup.scriptType}}</text>
+        <text class="tag">{{teamup.targetPlayers}}人本</text>
+      </view>
+      <text class="subtitle">点击查看剧本详情 ></text>
+    </view>
+  </view>
+
+  <view class="card status-card">
+    <view class="section-title">组局信息</view>
+    <view class="info-row">
+      <text class="label">开始时间</text>
+      <text class="value">{{teamup.startTime}}</text>
+    </view>
+    <view class="info-row">
+      <text class="label">当前状态</text>
+      <view class="value-with-icon">
+        <text class="icon">🔒</text>
+        <text class="{{isLocked ? 'locked-text' : 'counting-text'}}">{{teamup.lockStatusText}}</text>
+      </view>
+    </view>
+    <view class="info-row" wx:if="{{teamup.notes || teamup.merchantNotes}}">
+      <text class="label">备注说明</text>
+      <text class="value notes">{{teamup.notes || teamup.merchantNotes}}</text>
+    </view>
+  </view>
+
+  <view class="card players-card">
+    <view class="card-header">
+      <text class="section-title" style="margin-bottom: 0;">参与玩家</text>
+      <text class="player-count"><text class="current">{{teamup.currentPlayers}}</text> / {{teamup.targetPlayers}}</text>
+    </view>
+
+    <view class="avatar-list">
+      <block wx:for="{{teamup.joinedPlayers}}" wx:key="openid">
+        <view class="avatar-item">
+          
+          <view class="avatar-wrapper" bindtap="viewUserCard" data-openid="{{item.openid}}">
+            <image class="avatar-img" src="{{item.avatarUrl || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+            <text class="creator-badge" wx:if="{{item.isCreator}}">发起人</text>
+          </view>
+          
+          <view class="kick-btn"
+                wx:if="{{isCreator && !item.isCreator}}"
+                bindtap="kickPlayer"
+                data-openid="{{item.openid}}"
+                data-nickname="{{item.nickname}}">
+            踢
+          </view>
+          <text class="player-name">{{item.nickname}}</text>
+        </view>
+      </block>
+
+      <block wx:for="{{emptySlots}}" wx:key="*this">
+        <view class="avatar-item empty">
+          <text class="empty-text">待加入</text>
+        </view>
+      </block>
+    </view> </view> <view class="bottom-space"></view>
+</view>
+
+<!-- 底部按钮：isLoading 为 false 时才渲染，防止按钮先于内容闪出 -->
+<view class="bottom-bar" wx:if="{{!isLoading}}">
+  <button wx:if="{{!hasJoined}}" class="btn-primary" bindtap="joinTeamup">立即加入</button>
+  <button wx:else class="btn-primary btn-quit" bindtap="quitTeamup">退出组局</button>
+</view>

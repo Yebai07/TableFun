@@ -1,0 +1,98 @@
+<!--pages/register/register.wxml-->
+<view class="container">
+  <!-- 顶部导航栏 -->
+  <view class="nav-bar">
+    <view class="nav-title">注册</view>
+  </view>
+  
+  <!-- 注册表单 -->
+  <view class="form-container">
+    <!-- 头像选择 -->
+    <view class="form-item">
+      <text class="form-label">头像</text>
+      <view class="avatar-container" bindtap="chooseAvatar">
+        <image class="avatar" src="{{avatarUrl}}" mode="aspectFill"></image>
+        <view class="avatar-upload">
+          <text class="upload-text">更换</text>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 昵称输入 -->
+    <view class="form-item">
+      <text class="form-label">昵称</text>
+      <input class="form-input" placeholder="请输入昵称" value="{{nickname}}" bindinput="inputNickname"></input>
+    </view>
+    
+    <!-- 个性签名 -->
+    <view class="form-item">
+      <text class="form-label">个性签名</text>
+      <textarea class="form-textarea" placeholder="请输入个性签名" value="{{bio}}" bindinput="inputBio"></textarea>
+    </view>
+    
+    <!-- 性别选择 -->
+    <view class="form-item">
+      <text class="form-label">性别</text>
+      <view class="gender-container">
+        <radio-group bindchange="chooseGender">
+          <label class="gender-label">
+            <radio value="1" checked="{{gender == 1}}"/>
+            <text>男</text>
+          </label>
+          <label class="gender-label">
+            <radio value="2" checked="{{gender == 2}}"/>
+            <text>女</text>
+          </label>
+        </radio-group>
+      </view>
+    </view>
+    
+    <!-- MBTI输入 -->
+    <view class="form-item">
+      <text class="form-label">MBTI</text>
+      <input class="form-input" placeholder="请输入MBTI类型" value="{{mbti}}" bindinput="inputMbti"></input>
+    </view>
+    
+    <!-- 年龄输入 -->
+    <view class="form-item">
+      <text class="form-label">年龄</text>
+      <input class="form-input" placeholder="请输入年龄" value="{{age}}" bindinput="inputAge"></input>
+    </view>
+    
+    <!-- 地区输入 -->
+    <view class="form-item">
+      <text class="form-label">地区</text>
+      <input class="form-input" placeholder="请输入地区" value="{{region}}" bindinput="inputRegion"></input>
+    </view>
+    
+    <!-- 标签选择 -->
+    <view class="form-item">
+      <text class="form-label">个人标签</text>
+      <view class="tag-container">
+        <view wx:for="{{processedTags}}" wx:key="{{index}}" 
+              data-tag="{{item.name}}" 
+              bindtap="selectTag"
+              style="padding: 15rpx 30rpx; border-radius: 30rpx; font-size: 24rpx; transition: all 0.2s ease; box-shadow: 0 2rpx 5rpx rgba(0, 0, 0, 0.05); position: relative; overflow: visible; display: flex; align-items: center; justify-content: center; min-width: 100rpx; text-align: center; {{item.selected ? 'border: 2rpx solid #ffd700; background-color: #fffacd; color: #333; font-weight: bold;' : 'border: 2rpx solid #e0e0e0; background-color: #f5f5f5; color: #666;'}}">
+          <text class="tag-text">{{item.name}}</text>
+          <view wx:if="{{item.selected}}" style="position: absolute; top: -8rpx; right: -8rpx; width: 28rpx; height: 28rpx; background-color: #52c41a; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2rpx 6rpx rgba(82, 196, 26, 0.4); z-index: 10;">
+            <text style="color: #fff; font-size: 18rpx; font-weight: bold; line-height: 1;">✓</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 自定义标签 -->
+      <view class="custom-tag-section">
+        <text class="custom-tag-label">自定义标签</text>
+        <view class="custom-tag-input-container">
+          <input class="custom-tag-input" placeholder="输入自定义标签" value="{{customTag}}" bindinput="inputCustomTag"></input>
+          <button class="add-tag-btn" bindtap="addCustomTag">添加</button>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 注册按钮 -->
+    <button class="register-btn" bindtap="register">
+      <text class="register-btn-text">注册</text>
+    </button>
+  </view>
+</view>

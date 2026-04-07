@@ -1,0 +1,37 @@
+page { background-color: #f8f9fa; }
+.page-container { display: flex; flex-direction: column; height: 100vh; }
+
+/* 顶部 Tab */
+.tab-bar { display: flex; background: #fff; padding: 0 40rpx; position: sticky; top: 0; z-index: 100; box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.03); }
+.tab-item { flex: 1; text-align: center; font-size: 30rpx; color: #666; padding: 30rpx 0; position: relative; transition: all 0.3s; }
+.tab-item.active { color: #333; font-weight: bold; }
+.tab-item.active::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 60rpx; height: 6rpx; background: #ff5a5f; border-radius: 6rpx; }
+
+/* 列表区 */
+.list-container { flex: 1; padding: 20rpx; }
+.loading-state, .empty-state { text-align: center; padding: 200rpx 0; color: #999; font-size: 28rpx; line-height: 1.6; }
+
+/* 卡片样式 */
+.teamup-card { background: #fff; border-radius: 20rpx; padding: 30rpx; margin-bottom: 30rpx; box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05); transition: opacity 0.3s; }
+/* 已过期的卡片变灰暗 */
+.teamup-card.past { opacity: 0.6; }
+
+.card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1rpx solid #f0f0f0; padding-bottom: 20rpx; margin-bottom: 20rpx; }
+.time-text { font-size: 28rpx; font-weight: bold; color: #333; }
+.teamup-card.past .time-text { color: #999; }
+
+.status-tag { font-size: 24rpx; padding: 4rpx 16rpx; border-radius: 8rpx; font-weight: bold; }
+.status-tag.active { color: #fff; background: #ff5a5f; }
+.status-tag.past { color: #999; background: #eee; }
+
+.script-info { display: flex; }
+.script-cover { width: 120rpx; height: 160rpx; border-radius: 12rpx; flex-shrink: 0; background: #eee; }
+.script-text { margin-left: 20rpx; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.script-title { font-size: 32rpx; font-weight: bold; color: #333; }
+
+.script-tags { display: flex; gap: 12rpx; margin: 10rpx 0; }
+.tag-type, .tag-players { font-size: 22rpx; padding: 4rpx 14rpx; border-radius: 8rpx; font-weight: 500; }
+.tag-type { background: rgba(91, 134, 229, 0.1); color: #5b86e5; }
+.tag-players { background: rgba(255, 90, 95, 0.1); color: #ff5a5f; }
+
+.players-progress { font-size: 26rpx; color: #666; margin-top: auto; }
