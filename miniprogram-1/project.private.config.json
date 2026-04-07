@@ -22,11 +22,18 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/rate-user/rate-user",
-          "pathName": "pages/rate-user/rate-user",
+          "name": "pages/test-data/test-data",
+          "pathName": "pages/test-data/test-data",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/rate-user/rate-user",
+          "pathName": "pages/rate-user/rate-user",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }

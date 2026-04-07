@@ -11,7 +11,8 @@ Page({
     ],
     processedTags: [],
     customTag: '',
-    selectedTags: []
+    selectedTags: [],
+    targetOpenid: ''
   },
 
   /**
@@ -19,6 +20,15 @@ Page({
    */
   onLoad(options) {
     this.initTags();
+    // 接收目标用户的openid
+    if (options.openid) {
+      console.log('收到目标用户openid', options.openid);
+      this.setData({
+        targetOpenid: options.openid
+      });
+    } else {
+      console.log('未收到目标用户openid');
+    }
   },
 
   /**
@@ -108,107 +118,90 @@ Page({
       return;
     }
 
-    // 获取用户的openid
-    wx.cloud.callFunction({
-      name: 'quickstartFunctions',
-      data: {
-        type: 'getOpenId'
-      },
-      success: (res) => {
-        if (res.result && res.result.openid) {
-          const openid = res.result.openid;
-          this.updateUserTags(openid, selectedTags);
-        } else {
-          console.error('获取openid失败，返回结果异常', res);
+    // 优先使用目标用户的openid，如果没有则使用当前登录用户的openid
+    if (this.data.targetOpenid) {
+      this.updateUserTags(this.data.targetOpenid, selectedTags);
+    } else {
+      // 获取用户的openid
+      wx.cloud.callFunction({
+        name: 'quickstartFunctions',
+        data: {
+          type: 'getOpenId'
+        },
+        success: (res) => {
+          if (res.result && res.result.openid) {
+            const openid = res.result.openid;
+            this.updateUserTags(openid, selectedTags);
+          } else {
+            console.error('获取openid失败，返回结果异常', res);
+            wx.showToast({
+              title: '获取用户信息失败',
+              icon: 'none'
+            });
+          }
+        },
+        fail: (err) => {
+          console.error('获取openid失败', err);
           wx.showToast({
             title: '获取用户信息失败',
             icon: 'none'
           });
         }
-      },
-      fail: (err) => {
-        console.error('获取openid失败', err);
-        wx.showToast({
-          title: '获取用户信息失败',
-          icon: 'none'
-        });
-      }
-    });
+      });
+    }
   },
 
   /**
    * 更新用户标签
    */
   updateUserTags(openid, selectedTags) {
-    const db = wx.cloud.database();
-    db.collection('users').where({
-      _openid: openid
-    }).get({
+    wx.showLoading({ title: '提交评价...' });
+    
+    wx.cloud.callFunction({
+      name: 'updateUserTags',
+      data: {
+        openid: openid,
+        tags: selectedTags
+      },
       success: (res) => {
-        if (res.data && res.data.length > 0) {
-          const user = res.data[0];
-          const tags_others = user.tags_others || [];
-          
-          // 处理标签计数
-          selectedTags.forEach(tagName => {
-            const existingTag = tags_others.find(tag => tag.name === tagName);
-            if (existingTag) {
-              existingTag.count += 1;
-            } else {
-              tags_others.push({ name: tagName, count: 1 });
-            }
-          });
-
-          // 更新数据库
-          db.collection('users').doc(user._id).update({
-            data: {
-              tags_others: tags_others
-            },
-            success: (res) => {
-              console.log('评价成功', res);
-              wx.showToast({
-                title: '评价成功',
-                icon: 'success'
-              });
-              
-              // 显示操作选项
-              setTimeout(() => {
-                wx.showModal({
-                  title: '评价成功',
-                  content: '是否返回上一页？',
-                  confirmText: '返回',
-                  cancelText: '再次评价',
-                  success: (res) => {
-                    if (res.confirm) {
-                      wx.navigateBack();
-                    } else if (res.cancel) {
-                      // 重置标签选择
-                      this.initTags();
-                    }
-                  }
-                });
-              }, 1000);
-            },
-            fail: (err) => {
-              console.error('更新标签失败', err);
-              wx.showToast({
-                title: '评价失败，请重试',
-                icon: 'none'
-              });
-            }
-          });
-        } else {
-          console.error('用户信息不存在');
+        wx.hideLoading();
+        if (res.result && res.result.success) {
+          console.log('评价成功', res);
           wx.showToast({
-            title: '用户信息不存在',
+            title: '评价成功',
+            icon: 'success'
+          });
+          
+          // 显示操作选项
+          setTimeout(() => {
+            wx.showModal({
+              title: '评价成功',
+              content: '是否返回上一页？',
+              confirmText: '返回',
+              cancelText: '再次评价',
+              success: (res) => {
+                if (res.confirm) {
+                  wx.navigateBack();
+                } else if (res.cancel) {
+                  // 重置标签选择
+                  this.initTags();
+                }
+              }
+            });
+          }, 1000);
+        } else {
+          console.error('评价失败', res);
+          wx.showToast({
+            title: res.result?.message || '评价失败，请重试',
             icon: 'none'
           });
         }
       },
       fail: (err) => {
-        console.error('获取用户信息失败', err);
+        wx.hideLoading();
+        console.error('更新标签失败', err);
         wx.showToast({
-          title: '获取用户信息失败',
+          title: '评价失败，请重试',
           icon: 'none'
         });
       }

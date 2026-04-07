@@ -1,7 +1,7 @@
 <view class="page-container">
   <view class="header">
     <view class="header-left" bindtap="navigateBack">
-      <text class="back-arrow">&lt;</text>
+      <text class="back-arrow">←</text>
     </view>
     <view class="header-title">评价TA</view>
     <view class="header-right"></view>
