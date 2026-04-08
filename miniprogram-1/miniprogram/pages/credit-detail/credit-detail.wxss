@@ -1,0 +1,214 @@
+/* pages/credit-detail/credit-detail.wxss */
+.page-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 40rpx;
+}
+
+/* 加载中状态 */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 顶部信用分卡片 */
+.credit-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 60rpx 40rpx;
+  position: relative;
+}
+
+.credit-score-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+}
+
+.score-label {
+  font-size: 28rpx;
+  opacity: 0.9;
+  margin-bottom: 20rpx;
+}
+
+.score-value {
+  font-size: 120rpx;
+  font-weight: bold;
+  line-height: 1;
+  margin-bottom: 20rpx;
+}
+
+.score-level {
+  font-size: 24rpx;
+  padding: 8rpx 24rpx;
+  border-radius: 30rpx;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.score-level.excellent {
+  background-color: rgba(82, 196, 26, 0.3);
+}
+
+.score-level.good {
+  background-color: rgba(250, 173, 20, 0.3);
+}
+
+.score-level.poor {
+  background-color: rgba(255, 77, 79, 0.3);
+}
+
+.rules-btn {
+  position: absolute;
+  top: 30rpx;
+  right: 30rpx;
+}
+
+.rules-text {
+  color: #fff;
+  font-size: 24rpx;
+  opacity: 0.8;
+}
+
+/* 记录区域 */
+.records-section {
+  margin-top: 20rpx;
+  background-color: #fff;
+  padding: 30rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 30rpx;
+  padding-left: 20rpx;
+  border-left: 6rpx solid #667eea;
+}
+
+.loading-state, .empty-state {
+  text-align: center;
+  padding: 100rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 记录列表 */
+.records-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.record-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 30rpx 0;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.record-item:last-child {
+  border-bottom: none;
+}
+
+.record-left {
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.record-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.record-icon.init {
+  background-color: #e6f7ff;
+  color: #1890ff;
+}
+
+.record-icon.reward {
+  background-color: #f6ffed;
+  color: #52c41a;
+}
+
+.record-icon.penalty {
+  background-color: #fff1f0;
+  color: #ff4d4f;
+}
+
+.record-icon text {
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.record-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.record-title {
+  font-size: 30rpx;
+  color: #333;
+  font-weight: 500;
+  margin-bottom: 8rpx;
+}
+
+.record-time {
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.record-desc {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.record-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-left: 20rpx;
+}
+
+.record-change {
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.record-change.positive {
+  color: #52c41a;
+}
+
+.record-change.negative {
+  color: #ff4d4f;
+}
+
+.record-score {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 底部提示 */
+.footer-tips {
+  margin-top: 40rpx;
+  padding: 0 40rpx;
+  text-align: center;
+}
+
+.tips-text {
+  font-size: 24rpx;
+  color: #999;
+}

@@ -1,0 +1,56 @@
+<view class="page-container">
+  <!-- 加载中状态 -->
+  <view wx:if="{{isLoading}}" class="loading-container">
+    <text>加载中...</text>
+  </view>
+
+  <!-- 加载完成后显示内容 -->
+  <block wx:else>
+    <!-- 顶部信用分卡片 -->
+    <view class="credit-header">
+      <view class="credit-score-card">
+        <text class="score-label">当前信用分</text>
+        <text class="score-value">{{creditScore}}</text>
+        <view class="score-level {{creditScore >= 800 ? 'excellent' : creditScore >= 600 ? 'good' : 'poor'}}">
+          {{creditScore >= 800 ? '信用优秀' : creditScore >= 600 ? '信用良好' : '信用一般'}}
+        </view>
+      </view>
+      <view class="rules-btn" bindtap="viewCreditRules">
+        <text class="rules-text">信用规则 ></text>
+      </view>
+    </view>
+
+    <!-- 信用分变动记录 -->
+    <view class="records-section">
+      <view class="section-title">信用分变动记录</view>
+
+      <view wx:if="{{creditRecords.length === 0}}" class="empty-state">
+        <text class="empty-text">暂无信用分变动记录</text>
+      </view>
+
+      <view wx:else class="records-list">
+        <view class="record-item" wx:for="{{creditRecords}}" wx:key="id">
+          <view class="record-left">
+            <view class="record-icon {{item.type}}">
+              <text>{{item.type === 'init' ? '★' : item.type === 'reward' ? '+' : '-'}}</text>
+            </view>
+            <view class="record-info">
+              <text class="record-title">{{item.title}}</text>
+              <text class="record-time">{{item.time}}</text>
+              <text class="record-desc">{{item.description}}</text>
+            </view>
+          </view>
+          <view class="record-right">
+            <text class="record-change {{item.type === 'penalty' ? 'negative' : 'positive'}}">{{item.change}}</text>
+            <text class="record-score">{{item.score}}分</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部提示 -->
+    <view class="footer-tips">
+      <text class="tips-text">保持良好的组局习惯，信用分越高越容易组到优质队友哦~</text>
+    </view>
+  </block>
+</view>

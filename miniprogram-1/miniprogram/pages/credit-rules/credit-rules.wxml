@@ -1,0 +1,26 @@
+<view class="page-container">
+  <view class="header">
+    <text class="title">信用分规则</text>
+    <text class="subtitle">了解信用分获取与扣减规则</text>
+  </view>
+
+  <view class="rules-list">
+    <view class="rule-item" wx:for="{{rules}}" wx:key="index">
+      <view class="rule-icon {{item.type}}">
+        <text>{{item.icon}}</text>
+      </view>
+      <view class="rule-content">
+        <view class="rule-header">
+          <text class="rule-title">{{item.title}}</text>
+          <text class="rule-score {{item.type}}">{{item.score}}</text>
+        </view>
+        <text class="rule-desc">{{item.desc}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="tips-section">
+    <view class="tips-title">💡 小贴士</view>
+    <text class="tips-text">保持良好的组局习惯，信用分越高越容易组到优质队友。锁车后请尽量不要跳车，以免影响其他玩家的体验。</text>
+  </view>
+</view>

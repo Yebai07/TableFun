@@ -33,7 +33,7 @@
     </view>
 
     <view class="stats-card">
-      <view class="stat-item" bindtap="navigateToUserTags">
+      <view class="stat-item" bindtap="navigateToCreditDetail">
         <text class="stat-num">{{userInfo.creditScore || 800}}</text>
         <text class="stat-label">信用分</text>
       </view>

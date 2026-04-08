@@ -227,6 +227,15 @@ Page({
       url: '/pages/user-tags/user-tags'
     });
   },
+
+  /**
+   * 跳转到信用分详情页
+   */
+  navigateToCreditDetail() {
+    wx.navigateTo({
+      url: '/pages/credit-detail/credit-detail'
+    });
+  },
   // 增加/替换以下函数
   navigateToUserCard() {
     const openid = this.data.userInfo._openid || this.data.userInfo.openid;

@@ -192,6 +192,7 @@ Page({
    * 执行真正的退出（云函数处理）
    */
   executeQuit() {
+    const isLocked = this.data.isLocked; // 记录是否锁车状态
     wx.showLoading({ title: '正在退出...', mask: true });
     wx.cloud.callFunction({
       name: 'manageTeamup',
@@ -202,10 +203,110 @@ Page({
       success: (res) => {
         wx.hideLoading();
         if (res.result && res.result.success) {
-          wx.showToast({ title: '已成功下车', icon: 'success' });
-          this.fetchTeamupDetail();
+          // 如果锁车后跳车，扣除100信用分
+          if (isLocked) {
+            this.deductCreditScore();
+          } else {
+            wx.showToast({ title: '已成功下车', icon: 'success' });
+            this.fetchTeamupDetail();
+          }
         }
       }
+    });
+  },
+
+  /**
+   * 扣除信用分
+   */
+  deductCreditScore() {
+    const db = wx.cloud.database();
+    const _ = db.command;
+    const currentUser = this.data.currentUser;
+    
+    if (!currentUser) {
+      wx.showToast({ title: '已成功下车', icon: 'success' });
+      this.fetchTeamupDetail();
+      return;
+    }
+
+    wx.showLoading({ title: '扣除信用分...', mask: true });
+
+    // 使用 openid 查询用户文档，因为缓存中可能没有 _id
+    const openid = currentUser._openid || currentUser.openid;
+    
+    // 先查询获取用户的 _id
+    db.collection('users').where({
+      _openid: openid
+    }).get().then(res => {
+      if (res.data.length === 0) {
+        throw new Error('用户不存在');
+      }
+      
+      const userDoc = res.data[0];
+      const userId = userDoc._id;
+      const currentScore = userDoc.creditScore || 800;
+      const existingRecords = userDoc.creditRecords || [];
+
+      // 1. 扣除信用分并添加记录
+      const newRecord = {
+        id: Date.now(),
+        type: 'penalty',
+        title: '锁车跳车扣减',
+        change: '-100',
+        score: currentScore - 100,
+        time: new Date().toLocaleString('zh-CN'),
+        description: '组局已锁车后强制退出，扣除信用分'
+      };
+
+      return db.collection('users').doc(userId).update({
+        data: {
+          creditScore: _.inc(-100),
+          creditRecords: [newRecord, ...existingRecords]
+        }
+      });
+    }).then(() => {
+      // 更新本地缓存，确保个人中心页面和信用分详情页面能显示最新数据
+      const cachedData = wx.getStorageSync('cachedUserInfo');
+      if (cachedData && cachedData.userInfo) {
+        const currentScore = cachedData.userInfo.creditScore || 800;
+        const existingRecords = cachedData.userInfo.creditRecords || [];
+        
+        // 创建新的扣分记录
+        const newRecord = {
+          id: Date.now(),
+          type: 'penalty',
+          title: '锁车跳车扣减',
+          change: '-100',
+          score: currentScore - 100,
+          time: new Date().toLocaleString('zh-CN'),
+          description: '组局已锁车后强制退出，扣除信用分'
+        };
+        
+        const updatedUserInfo = {
+          ...cachedData.userInfo,
+          creditScore: currentScore - 100,
+          creditRecords: [newRecord, ...existingRecords]
+        };
+        wx.setStorageSync('cachedUserInfo', {
+          userInfo: updatedUserInfo,
+          timestamp: Date.now()
+        });
+      }
+      
+      wx.hideLoading();
+      wx.showModal({
+        title: '已扣除信用分',
+        content: '您已在锁车后退出组局，信用分已扣除100分。',
+        showCancel: false,
+        success: () => {
+          this.fetchTeamupDetail();
+        }
+      });
+    }).catch(err => {
+      wx.hideLoading();
+      console.error('扣除信用分失败', err);
+      wx.showToast({ title: '已成功下车', icon: 'success' });
+      this.fetchTeamupDetail();
     });
   },
 
