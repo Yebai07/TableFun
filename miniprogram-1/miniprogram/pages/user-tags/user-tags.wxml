@@ -1,0 +1,34 @@
+<view class="page-container">
+  
+  <view class="section-card">
+    <view class="section-header">
+      <text class="title">TA眼中的自己</text>
+    </view>
+    
+    <view class="tags-wrapper">
+      <block wx:for="{{userInfo.tags_self}}" wx:key="*this">
+        <view class="tag self-tag">
+          <text>{{item}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+  
+  <view class="section-card">
+    <view class="section-header">
+      <text class="title">别人眼中的TA</text>
+    </view>
+    
+    <view class="tags-wrapper">
+      <block wx:for="{{userInfo.tags_others}}" wx:key="name">
+        <view class="tag other-tag">
+          <text class="tag-name">{{item.name}}</text>
+          <view class="tag-count" wx:if="{{item.count > 0}}">
+            <text>{{item.count}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+</view>

@@ -67,6 +67,14 @@
 
 <!-- 底部按钮：isLoading 为 false 时才渲染，防止按钮先于内容闪出 -->
 <view class="bottom-bar" wx:if="{{!isLoading}}">
-  <button wx:if="{{!hasJoined}}" class="btn-primary" bindtap="joinTeamup">立即加入</button>
-  <button wx:else class="btn-primary btn-quit" bindtap="quitTeamup">退出组局</button>
+  
+  <block wx:if="{{isPast}}">
+    <button class="btn-primary" style="background: #cccccc !important; color: #ffffff !important;" disabled="true">该组局已结束</button>
+  </block>
+
+  <block wx:else>
+    <button wx:if="{{!hasJoined}}" class="btn-primary" bindtap="joinTeamup">立即加入</button>
+    <button wx:else class="btn-primary btn-quit" bindtap="quitTeamup">退出组局</button>
+  </block>
+  
 </view>

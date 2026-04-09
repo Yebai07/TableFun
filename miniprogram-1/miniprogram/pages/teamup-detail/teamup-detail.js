@@ -54,23 +54,69 @@ Page({
     });
   },
 
-  refreshUIState(teamup, hasJoined, isCreator) {
-    const { isLocked, lockStatusText } = calcLockStatus(teamup);
-    const isFull = teamup.currentPlayers >= teamup.targetPlayers;
-    const emptyCount = Math.max(0, teamup.targetPlayers - teamup.currentPlayers);
-    const emptySlots = Array.from({ length: emptyCount }, (_, i) => i);
+/**
+   * 统一刷新函数：处理倒计时文本、锁车判定、空坑位计算
+   */
+refreshUIState(teamup, hasJoined) {
+  const now = new Date().getTime();
+  const startTimeStr = teamup.startTime.replace(/-/g, '/');
+  const startTimestamp = new Date(startTimeStr).getTime();
+  const isFull = teamup.currentPlayers >= teamup.targetPlayers;
+  
+  // 🚀 新增：判断该剧本是否已经开始/结束
+  const isPast = now >= startTimestamp;
 
-    teamup.lockStatusText = lockStatusText;
-    this.setData({
-      teamup,
-      isLocked,
-      isFull,
-      hasJoined,
-      isCreator,
-      emptySlots,
-      isLoading: false
-    });
-  },
+  let isLocked = false;
+  let lockStatusText = '';
+
+  // A. 判定锁车逻辑
+  if (isPast) {
+    isLocked = true;
+    lockStatusText = "已发车/已结束"; // 时间过了，直接显示已结束
+  } else if (teamup.lockWhenFull && isFull) {
+    isLocked = true;
+    lockStatusText = "已满员锁车";
+  } else {
+    const hours = teamup.lockHours || 0;
+    const deadline = startTimestamp - (hours * 60 * 60 * 1000);
+    const diff = deadline - now;
+
+    if (hours === 0 && diff > 0) {
+      isLocked = false;
+      lockStatusText = "发车前不锁定";
+    } else if (diff <= 0) {
+      isLocked = true;
+      lockStatusText = "已锁车";
+    } else {
+      isLocked = false;
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      if (h > 24) {
+        lockStatusText = `距锁定还有${Math.floor(h/24)}天`;
+      } else if (h > 0) {
+        lockStatusText = `距锁定还有${h}小时${m}分`;
+      } else {
+        lockStatusText = `距锁定还有${m}分`;
+      }
+    }
+  }
+
+  // B. 计算空坑位
+  const emptyCount = Math.max(0, teamup.targetPlayers - teamup.currentPlayers);
+  const emptySlots = Array.from({ length: emptyCount }, (v, i) => i);
+
+  // C. 同步所有状态并关闭加载锁
+  teamup.lockStatusText = lockStatusText;
+  this.setData({
+    teamup: teamup,
+    isLocked: isLocked,
+    isFull: isFull,
+    hasJoined: hasJoined,
+    emptySlots: emptySlots,
+    isPast: isPast, // 🚀 关键：把是否过期传给前端 WXML
+    isLoading: false 
+  });
+},
 
   joinTeamup() {
     if (!this.data.currentUser) {

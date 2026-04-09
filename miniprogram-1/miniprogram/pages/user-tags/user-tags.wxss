@@ -1,0 +1,91 @@
+/* pages/user-tags/user-tags.wxss */
+.page-container {
+  min-height: 100vh;
+  background-color: #f8f9fa; /* 统一的灰白色背景 */
+  padding: 40rpx 30rpx;
+  box-sizing: border-box;
+}
+
+/* 高级卡片样式 */
+.section-card {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 40rpx 30rpx;
+  margin-bottom: 40rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.03); /* 极其克制的阴影 */
+}
+
+/* 标题栏设计 */
+.section-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 30rpx;
+}
+
+.title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333333;
+  margin-right: 16rpx;
+}
+
+.subtitle {
+  font-size: 24rpx;
+  color: #cccccc;
+  font-family: Arial, sans-serif;
+}
+
+/* 标签容器 */
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20rpx; /* 使用 gap 代替 margin，排版更整齐 */
+}
+
+/* 基础标签样式 */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 30rpx;
+  border-radius: 50rpx; /* 全圆角，像个小胶囊 */
+  font-size: 26rpx;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tag:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
+
+/* 自我标签：高级浅灰底 + 深色字 */
+.self-tag {
+  background: #f5f5f5;
+  color: #333333;
+}
+
+/* 他人标签：深色酷炫黑底 + 白字 */
+.other-tag {
+  background: #333333;
+  color: #ffffff;
+  padding-right: 12rpx; /* 给右侧的次数角标留点呼吸空间 */
+}
+
+.tag-name {
+  margin-right: 10rpx;
+}
+
+/* 次数气泡设计 */
+.tag-count {
+  background: rgba(255, 255, 255, 0.2); /* 半透明气泡 */
+  color: #ffffff;
+  font-size: 20rpx;
+  height: 36rpx;
+  min-width: 36rpx;
+  border-radius: 18rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10rpx;
+  font-weight: bold;
+}

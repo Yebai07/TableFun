@@ -140,54 +140,6 @@ Page({
   },
 
   /**
-   * 返回上一页
-   */
-  navigateBack() {
-    wx.navigateBack();
-  },
-
-  /**
-   * 获取自己标签的样式类
-   */
-  getSelfTagClass(tag) {
-    switch (tag) {
-      case '06':
-        return 'tag-orange';
-      case '男':
-      case '学生':
-      case '社交达人':
-        return 'tag-red';
-      case '郫都区':
-      case '细节控':
-        return 'tag-purple';
-      case '反串爱好者':
-        return 'tag-blue';
-      case '气氛烘托者':
-        return 'tag-green';
-      default:
-        return 'tag-gray';
-    }
-  },
-
-  /**
-   * 获取他人标签的样式类
-   */
-  getOtherTagClass(tag) {
-    switch (tag) {
-      case '剧本杀大神':
-        return 'tag-blue';
-      case '人形测谎仪':
-        return 'tag-purple';
-      case '新手护航者':
-        return 'tag-green';
-      case '复盘小能手':
-        return 'tag-red';
-      default:
-        return 'tag-gray';
-    }
-  },
-
-  /**
    * 生命周期函数--监听页面初次渲染完成
    */
   onReady() {
