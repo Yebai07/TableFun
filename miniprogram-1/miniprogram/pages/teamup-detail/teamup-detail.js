@@ -31,14 +31,46 @@ Page({
   onHide() { if (this.data.timer) clearInterval(this.data.timer); },
   onUnload() { if (this.data.timer) clearInterval(this.data.timer); },
 
-  fetchTeamupDetail() {
+  /**
+   * 拉取组局详情（升级版：动态同步玩家最新资料）
+   */
+  async fetchTeamupDetail() {
     if (this.data.isDisbanding) return;
-    db.collection('teamups').doc(this.data.teamupId).get().then(res => {
+    
+    try {
+      const res = await db.collection('teamups').doc(this.data.teamupId).get();
       const data = res.data;
+      
+      // 🚀 核心修复 1：去 users 库动态拉取车上所有玩家的【最新头像】和【最新昵称】
+      const openids = data.joinedPlayers.map(p => p.openid);
+      if (openids.length > 0) {
+        try {
+          const usersRes = await db.collection('users').where({
+            _openid: _.in(openids) // 批量查询车上所有人的最新档案
+          }).get();
+          
+          // 将最新的头像和昵称覆盖到当前显示数据中
+          data.joinedPlayers = data.joinedPlayers.map(player => {
+            const latestUser = usersRes.data.find(u => u._openid === player.openid || u.openid === player.openid);
+            if (latestUser) {
+              return {
+                ...player,
+                avatarUrl: latestUser.avatarUrl || '/images/default-avatar.png',
+                nickname: latestUser.nickname || '玩家'
+              };
+            }
+            return player;
+          });
+        } catch (fetchErr) {
+          console.error('动态拉取最新玩家信息失败，降级使用历史快照', fetchErr);
+        }
+      }
+
       const myOpenid = this.data.currentUser?._openid || this.data.currentUser?.openid;
       const hasJoined = myOpenid ? data.joinedPlayers.some(p => p.openid === myOpenid) : false;
       const isCreator = myOpenid ? data.joinedPlayers.some(p => p.openid === myOpenid && p.isCreator) : false;
 
+      // 传入 isCreator
       this.refreshUIState(data, hasJoined, isCreator);
 
       if (this.data.timer) clearInterval(this.data.timer);
@@ -48,76 +80,79 @@ Page({
       this.setData({ timer });
 
       wx.setNavigationBarTitle({ title: data.scriptTitle || '拼车详情' });
-    }).catch(err => {
+
+    } catch (err) {
       console.error('获取详情失败', err);
       wx.showToast({ title: '该组局已失效', icon: 'none' });
+    }
+  },
+
+  /**
+   * 统一刷新函数：处理倒计时文本、锁车判定、空坑位计算
+   */
+  refreshUIState(teamup, hasJoined, isCreator) { // 🚀 接收 isCreator 参数
+    const now = new Date().getTime();
+    const startTimeStr = teamup.startTime.replace(/-/g, '/');
+    const startTimestamp = new Date(startTimeStr).getTime();
+    const isFull = teamup.currentPlayers >= teamup.targetPlayers;
+    
+    const isPast = now >= startTimestamp;
+
+    let isLocked = false;
+    let lockStatusText = '';
+
+    if (isPast) {
+      isLocked = true;
+      lockStatusText = "已发车/已结束";
+    } else if (teamup.lockWhenFull && isFull) {
+      isLocked = true;
+      lockStatusText = "已满员";
+    } else {
+      const hours = teamup.lockHours || 0;
+      const deadline = startTimestamp - (hours * 60 * 60 * 1000);
+      const diff = deadline - now;
+
+      if (hours === 0 && diff > 0) {
+        isLocked = false;
+        lockStatusText = "本组局不锁定";
+      } else if (diff <= 0) {
+        isLocked = true;
+        lockStatusText = "已锁定";
+      } else {
+        isLocked = false;
+        const h = Math.floor(diff / (1000 * 60 * 60));
+        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        if (h > 24) {
+          lockStatusText = `距锁定还有${Math.floor(h/24)}天`;
+        } else if (h > 0) {
+          lockStatusText = `距锁定还有${h}小时${m}分`;
+        } else {
+          lockStatusText = `距锁定还有${m}分`;
+        }
+      }
+    }
+
+    const emptyCount = Math.max(0, teamup.targetPlayers - teamup.currentPlayers);
+    const emptySlots = Array.from({ length: emptyCount }, (v, i) => i);
+
+    teamup.lockStatusText = lockStatusText;
+    
+    // 🚀 核心修复 2：把 isCreator 存入 data，让前端的“踢人按钮”重见天日！
+    this.setData({
+      teamup: teamup,
+      isLocked: isLocked,
+      isFull: isFull,
+      hasJoined: hasJoined,
+      isCreator: isCreator !== undefined ? isCreator : this.data.isCreator, 
+      emptySlots: emptySlots,
+      isPast: isPast,
+      isLoading: false 
     });
   },
 
-/**
-   * 统一刷新函数：处理倒计时文本、锁车判定、空坑位计算
+  /**
+   * 点击加入按钮：根据锁车状态判断是否需要弹窗警告
    */
-refreshUIState(teamup, hasJoined) {
-  const now = new Date().getTime();
-  const startTimeStr = teamup.startTime.replace(/-/g, '/');
-  const startTimestamp = new Date(startTimeStr).getTime();
-  const isFull = teamup.currentPlayers >= teamup.targetPlayers;
-  
-  // 🚀 新增：判断该剧本是否已经开始/结束
-  const isPast = now >= startTimestamp;
-
-  let isLocked = false;
-  let lockStatusText = '';
-
-  // A. 判定锁车逻辑
-  if (isPast) {
-    isLocked = true;
-    lockStatusText = "已发车/已结束"; // 时间过了，直接显示已结束
-  } else if (teamup.lockWhenFull && isFull) {
-    isLocked = true;
-    lockStatusText = "已满员锁车";
-  } else {
-    const hours = teamup.lockHours || 0;
-    const deadline = startTimestamp - (hours * 60 * 60 * 1000);
-    const diff = deadline - now;
-
-    if (hours === 0 && diff > 0) {
-      isLocked = false;
-      lockStatusText = "发车前不锁定";
-    } else if (diff <= 0) {
-      isLocked = true;
-      lockStatusText = "已锁车";
-    } else {
-      isLocked = false;
-      const h = Math.floor(diff / (1000 * 60 * 60));
-      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      if (h > 24) {
-        lockStatusText = `距锁定还有${Math.floor(h/24)}天`;
-      } else if (h > 0) {
-        lockStatusText = `距锁定还有${h}小时${m}分`;
-      } else {
-        lockStatusText = `距锁定还有${m}分`;
-      }
-    }
-  }
-
-  // B. 计算空坑位
-  const emptyCount = Math.max(0, teamup.targetPlayers - teamup.currentPlayers);
-  const emptySlots = Array.from({ length: emptyCount }, (v, i) => i);
-
-  // C. 同步所有状态并关闭加载锁
-  teamup.lockStatusText = lockStatusText;
-  this.setData({
-    teamup: teamup,
-    isLocked: isLocked,
-    isFull: isFull,
-    hasJoined: hasJoined,
-    emptySlots: emptySlots,
-    isPast: isPast, // 🚀 关键：把是否过期传给前端 WXML
-    isLoading: false 
-  });
-},
-
   joinTeamup() {
     if (!this.data.currentUser) {
       return wx.showModal({
@@ -127,10 +162,34 @@ refreshUIState(teamup, hasJoined) {
         success: (res) => { if (res.confirm) wx.switchTab({ url: '/pages/profile/profile' }); }
       });
     }
-    if (this.data.isLocked) return wx.showToast({ title: '该车已锁定，无法加入', icon: 'none' });
-    if (this.data.isFull) return wx.showToast({ title: '车已经满了哦', icon: 'none' });
+    
+    // 1. 车满了绝对不能加
+    if (this.data.isFull) return wx.showToast({ title: '人满了哦', icon: 'none' });
 
+    // 2. 如果已经锁车，给出“霸王条款”警告！
+    if (this.data.isLocked) {
+      wx.showModal({
+        title: '补位提示',
+        content: '该组局已过锁定时间。现在加入后，如果中途退出将被扣除 50 信用分！确定要加入吗？',
+        confirmColor: '#ff5a5f',
+        success: (res) => {
+          if (res.confirm) {
+            this.executeJoin(); // 确认后真正执行加入
+          }
+        }
+      });
+    } else {
+      // 3. 如果没锁车，直接正常上车
+      this.executeJoin();
+    }
+  },
+
+  /**
+   * 真正执行上车写入数据库的逻辑（被单独抽离出来复用）
+   */
+  executeJoin() {
     wx.showLoading({ title: '正在加入...', mask: true });
+    
     wx.cloud.callFunction({
       name: 'manageTeamup',
       data: {
@@ -144,7 +203,8 @@ refreshUIState(teamup, hasJoined) {
       success: (res) => {
         wx.hideLoading();
         if (res.result && res.result.success) {
-          wx.showToast({ title: '上车成功！', icon: 'success' });
+          wx.showToast({ title: '加入成功！', icon: 'success' });
+          // 上车成功后，重新拉取详情，刷新 UI
           this.fetchTeamupDetail();
         } else {
           wx.showToast({ title: res.result.msg || '操作失败', icon: 'none' });

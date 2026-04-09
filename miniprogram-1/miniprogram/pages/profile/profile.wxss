@@ -42,3 +42,88 @@ page { background-color: #f8f9fa; }
 .arrow-right { font-size: 28rpx; color: #ccc; }
 
 .action-section { padding: 0 40rpx 40rpx; }
+/* ================= 头像选择弹窗样式 ================= */
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 900;
+  backdrop-filter: blur(4rpx); /* 给背景一点高级的模糊感 */
+}
+
+.avatar-popup {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 40rpx 40rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  z-index: 999;
+  animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 丝滑的弹出动画 */
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.popup-title {
+  font-size: 34rpx;
+  font-weight: bold;
+  color: #333333;
+}
+
+.close-btn {
+  font-size: 44rpx;
+  color: #999999;
+  padding: 0 20rpx;
+  margin-right: -20rpx;
+}
+
+/* 4列网格排版 */
+.avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 30rpx 20rpx;
+  justify-items: center;
+}
+
+.avatar-option {
+  width: 130rpx;
+  height: 130rpx;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 6rpx solid transparent;
+  transition: all 0.2s ease;
+  background: #f5f5f5; /* 没图片时的底色 */
+}
+
+.avatar-option image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 被选中的头像样式 */
+.avatar-option.selected {
+  border-color: #333333; /* 酷炫的纯黑描边 */
+  transform: scale(1.08); /* 选中后稍微放大凸显 */
+  box-shadow: 0 8rpx 16rpx rgba(0,0,0,0.1);
+}
+
+.avatar-option:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}

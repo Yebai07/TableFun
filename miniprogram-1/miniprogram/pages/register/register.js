@@ -14,6 +14,17 @@ Page({
     availableTags: [
       '剧本杀大神', '社交达人', '细节控', '气氛烘托者',
       '反串爱好者', '新手护航者', '复盘小能手', '人形测谎仪'
+    ],
+    // 🚀 新增：头像选择库状态
+    showAvatarPopup: false,
+    avatarList: [
+      '/images/default-avatar.png',
+      '/images/avatar-1.png',
+      '/images/avatar-2.png',
+      '/images/avatar-3.png',
+      '/images/avatar-4.png',
+      '/images/avatar-5.png',
+      '/images/avatar-6.png'
     ]
   },
 
@@ -28,40 +39,26 @@ Page({
     }));
   },
 
+  // 输入绑定
   inputNickname(e) { this.setData({ nickname: e.detail.value }); },
   inputBio(e) { this.setData({ bio: e.detail.value }); },
-  chooseGender(e) { this.setData({ gender: e.detail.value }); },
+  chooseGender(e) { this.setData({ gender: parseInt(e.detail.value) }); },
   inputMbti(e) { this.setData({ mbti: e.detail.value }); },
   inputAge(e) { this.setData({ age: e.detail.value }); },
   inputRegion(e) { this.setData({ region: e.detail.value }); },
   inputCustomTag(e) { this.setData({ customTag: e.detail.value }); },
 
-  chooseAvatar() {
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        // 上传到云存储，保存永久可用的 fileID
-        wx.showLoading({ title: '上传头像...' });
-        wx.cloud.uploadFile({
-          cloudPath: `avatars/${Date.now()}.jpg`,
-          filePath: res.tempFilePaths[0],
-          success: (upRes) => {
-            wx.hideLoading();
-            this.setData({ avatarUrl: upRes.fileID });
-          },
-          fail: () => {
-            wx.hideLoading();
-            // 上传失败降级使用临时路径（仅当前会话有效）
-            this.setData({ avatarUrl: res.tempFilePaths[0] });
-            wx.showToast({ title: '头像上传失败，将使用临时图', icon: 'none' });
-          }
-        });
-      }
+  // 🚀 新增：打开/关闭/选择头像
+  chooseAvatar() { this.setData({ showAvatarPopup: true }); },
+  closeAvatarPopup() { this.setData({ showAvatarPopup: false }); },
+  selectAvatar(e) {
+    this.setData({ 
+      avatarUrl: e.currentTarget.dataset.url,
+      showAvatarPopup: false
     });
   },
 
+  // 标签逻辑
   selectTag(e) {
     const tag = e.currentTarget.dataset.tag;
     let tags_self = [...this.data.tags_self];
@@ -92,6 +89,7 @@ Page({
     wx.showToast({ title: '标签添加成功', icon: 'success' });
   },
 
+  // 注册逻辑
   register() {
     if (!this.data.nickname) return wx.showToast({ title: '请输入昵称', icon: 'none' });
     this.createUser();
@@ -112,7 +110,7 @@ Page({
       tags_self: this.data.tags_self
     };
 
-    wx.showLoading({ title: '正在处理...' });
+    wx.showLoading({ title: '正在创建档案...', mask: true });
 
     db.collection('users').where({ _openid: '{openid}' }).get().then(res => {
       if (res.data.length > 0) {
@@ -135,7 +133,6 @@ Page({
     });
   },
 
-  // 统一只保留一个 saveAndLogin
   saveAndLogin(userData, docId, openid) {
     wx.hideLoading();
     const completeUserInfo = { ...userData, _id: docId, _openid: openid };

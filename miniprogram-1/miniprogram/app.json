@@ -13,7 +13,8 @@
     "pages/teamup-detail/teamup-detail",
     "pages/register/register",
     "pages/credit-detail/credit-detail",
-    "pages/credit-rules/credit-rules"
+    "pages/credit-rules/credit-rules",
+    "pages/rate-user/rate-user"
   ],
   "window": {
     "backgroundTextStyle": "light",

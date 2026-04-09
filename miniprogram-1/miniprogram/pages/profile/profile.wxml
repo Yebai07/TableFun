@@ -71,4 +71,24 @@
     </view>
 
   </view>
+  <view class="popup-mask" wx:if="{{showAvatarPopup}}" bindtap="closeAvatarPopup"></view>
+  
+  <view class="avatar-popup" wx:if="{{showAvatarPopup}}">
+    <view class="popup-header">
+      <text class="popup-title">选择头像</text>
+      <text class="close-btn" bindtap="closeAvatarPopup">×</text>
+    </view>
+    
+    <view class="avatar-grid">
+      <view 
+        class="avatar-option {{userInfo.avatarUrl === item || (!userInfo.avatarUrl && item === '/images/default-avatar.png') ? 'selected' : ''}}" 
+        wx:for="{{avatarList}}" 
+        wx:key="*this"
+        bindtap="selectAvatar"
+        data-url="{{item}}"
+      >
+        <image src="{{item}}" mode="aspectFill"></image>
+      </view>
+    </view>
+  </view>
 </view>

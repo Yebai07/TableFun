@@ -1,0 +1,43 @@
+<view class="page-container">
+  
+  <view class="section-card">
+    <view class="section-header">
+      <text class="title">为TA贴上专属标签</text>
+    </view>
+    
+    <view class="tags-wrapper">
+      <view 
+        wx:for="{{presetTags}}" 
+        wx:key="name"
+        class="tag {{item.selected ? 'tag-selected' : ''}}"
+        data-index="{{index}}"
+        bindtap="toggleTag"
+      >
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="section-card">
+    <view class="section-header">
+      <text class="title">没找到合适的？</text>
+    </view>
+    
+    <view class="custom-input-box">
+      <input 
+        class="input-field" 
+        placeholder="输入自定义标签 (最多6个字)" 
+        maxlength="6"
+        value="{{customTag}}"
+        bindinput="onCustomInput"
+        confirm-type="done"
+      />
+      <button class="btn-add" bindtap="addCustomTag">添加</button>
+    </view>
+  </view>
+
+  <view class="bottom-action">
+    <button class="btn-primary" bindtap="submitRate">确认提交</button>
+  </view>
+
+</view>

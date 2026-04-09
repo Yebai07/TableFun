@@ -19,7 +19,7 @@
             
             <view class="card-header">
               <text class="time-text">🕒 开始：{{item.startTime}}</text>
-              <text class="status-tag {{item.isPast ? 'past' : 'active'}}">{{item.isPast ? '已结束' : '招募/锁车中'}}</text>
+              <text class="status-tag {{item.isPast ? 'past' : 'active'}}">{{item.isPast ? '已结束' : '进行中'}}</text>
             </view>
             
             <view class="script-info">

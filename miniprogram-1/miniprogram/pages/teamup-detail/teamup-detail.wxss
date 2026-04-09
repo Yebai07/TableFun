@@ -136,10 +136,15 @@ page {
   flex-direction: column;
   align-items: center;
 }
+/* ===== 高级感真实玩家头像 ===== */
 .avatar-img {
   width: 100rpx;
   height: 100rpx;
   border-radius: 50%;
+  background: #f5f5f5; /* 防止图片未加载时的黑块 */
+  border: 4rpx solid #ffffff; /* 高级白边 */
+  box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.06); /* 极其克制的阴影 */
+  box-sizing: border-box;
 }
 /* 新增：为头像和标签建立一个相对定位的盒子 */
 .avatar-wrapper {
@@ -168,18 +173,23 @@ page {
   border: 2rpx solid #fff;
   z-index: 2;
 }
+/* ===== 充满设计感的“空坑位” ===== */
 .avatar-item.empty {
-  border: 2rpx dashed #ccc;
+  width: 100rpx;
+  height: 100rpx;
+  border: 4rpx dashed #cccccc;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #fafafa;
+  background: #fcfcfc;
   box-sizing: border-box;
+  box-shadow: inset 0 2rpx 8rpx rgba(0,0,0,0.02); /* 内阴影增加凹陷感 */
 }
 .empty-text {
-  font-size: 22rpx;
-  color: #bbb;
+  font-size: 20rpx;
+  color: #aaaaaa;
+  font-weight: bold;
 }
 
 /* --- 底部按钮区 --- */

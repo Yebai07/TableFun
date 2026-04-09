@@ -43,6 +43,17 @@ Page({
     wx.navigateTo({ url: '/pages/profile-edit/profile-edit' });
   },
 
-  onEvaluate() { wx.showToast({ title: '评价功能开发中', icon: 'none' }); },
+  onEvaluate() { // 获取当前正在查看的玩家的 openid (兼容两种命名)
+    const targetOpenid = this.data.userInfo._openid || this.data.userInfo.openid;
+
+    if (!targetOpenid) {
+      return wx.showToast({ title: '无法获取该玩家信息', icon: 'none' });
+    }
+
+    // 核心跳转逻辑：带着 openid 去我们刚写好的极简评价页
+    wx.navigateTo({
+      url: `/pages/rate-user/rate-user?openid=${targetOpenid}`
+    });
+  },
   onChat() { wx.showToast({ title: '聊天功能开发中', icon: 'none' }); }
 })

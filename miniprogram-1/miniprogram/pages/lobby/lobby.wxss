@@ -57,11 +57,6 @@ page { background-color: #f8f9fa; }
   background: rgba(255, 149, 0, 0.1);
   color: #ff9500;
 }
-/* 已锁车：灰色 */
-.lock-status.locked {
-  background: #f0f0f0;
-  color: #999;
-}
 
 /* 底部操作区 */
 .card-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 20rpx; border-top: 1rpx dashed #f0f0f0; }

@@ -6,7 +6,19 @@ Page({
     isLoading: true,
     userInfo: null,
     devMode: false,
-    cachedUserInfo: null
+    cachedUserInfo: null,
+    // 新增：头像选择弹窗状态
+    showAvatarPopup: false,
+    // 新增：本地头像库路径（确保你的 images 文件夹里有这些图片）
+    avatarList: [
+      '/images/default-avatar.png',
+      '/images/avatar-1.jpeg',
+      '/images/avatar-2.jpeg',
+      '/images/avatar-3.jpeg',
+      '/images/avatar-4.jpeg',
+      '/images/avatar-5.jpeg',
+      '/images/avatar-6.jpeg'
+    ]
   },
 
   onLoad(options) {
@@ -154,39 +166,56 @@ Page({
   },
   navigateToProfileEdit() { wx.navigateTo({ url: '/pages/profile-edit/profile-edit' }); },
 
+  /**
+   * 点击头像：不再调用相机，而是打开选择弹窗
+   */
   chooseAvatar() {
-    wx.chooseImage({
-      count: 1,
-      sizeType: ['compressed'],
-      sourceType: ['album', 'camera'],
-      success: (res) => {
-        const tempPath = res.tempFilePaths[0];
-        this.setData({ 'userInfo.avatarUrl': tempPath });
+    this.setData({ showAvatarPopup: true });
+  },
 
-        wx.showLoading({ title: '上传头像...' });
-        wx.cloud.uploadFile({
-          cloudPath: `avatars/${Date.now()}.jpg`,
-          filePath: tempPath,
-          success: (upRes) => {
-            wx.hideLoading();
-            const fileID = upRes.fileID;
-            this.setData({ 'userInfo.avatarUrl': fileID });
-            const db = wx.cloud.database();
-            db.collection('users').doc(this.data.userInfo._id).update({
-              data: { avatarUrl: fileID },
-              success: () => {
-                const newUserInfo = { ...this.data.userInfo, avatarUrl: fileID };
-                wx.setStorageSync('cachedUserInfo', { userInfo: newUserInfo, timestamp: Date.now() });
-                wx.showToast({ title: '更换成功', icon: 'success' });
-              },
-              fail: () => wx.showToast({ title: '保存失败', icon: 'none' })
-            });
-          },
-          fail: () => {
-            wx.hideLoading();
-            wx.showToast({ title: '头像上传失败', icon: 'none' });
-          }
+  /**
+   * 关闭头像选择弹窗
+   */
+  closeAvatarPopup() {
+    this.setData({ showAvatarPopup: false });
+  },
+
+  /**
+   * 核心：选择新头像并直接存入数据库
+   */
+  selectAvatar(e) {
+    const selectedUrl = e.currentTarget.dataset.url;
+    
+    // 如果选的跟现在的一样，直接关闭弹窗
+    if (this.data.userInfo.avatarUrl === selectedUrl) {
+      this.closeAvatarPopup();
+      return;
+    }
+
+    wx.showLoading({ title: '保存中...', mask: true });
+    
+    const db = wx.cloud.database();
+    db.collection('users').doc(this.data.userInfo._id).update({
+      data: { avatarUrl: selectedUrl },
+      success: () => {
+        wx.hideLoading();
+        
+        // 1. 更新本地页面数据和缓存
+        const newUserInfo = { ...this.data.userInfo, avatarUrl: selectedUrl };
+        wx.setStorageSync('cachedUserInfo', { userInfo: newUserInfo, timestamp: Date.now() });
+        
+        // 2. 刷新UI并关闭弹窗
+        this.setData({
+          userInfo: newUserInfo,
+          showAvatarPopup: false
         });
+        
+        wx.showToast({ title: '更换成功', icon: 'success' });
+      },
+      fail: (err) => {
+        wx.hideLoading();
+        console.error('更新头像失败', err);
+        wx.showToast({ title: '保存失败', icon: 'none' });
       }
     });
   },
@@ -201,5 +230,6 @@ Page({
     // 下拉强制全量刷新并校验
     this.checkUserRegistered();
     wx.stopPullDownRefresh();
-  }
+  },
+  
 })
