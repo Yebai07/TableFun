@@ -137,7 +137,14 @@ Page({
   },
 
   // ---------------- 以下为页面跳转和交互方法 ----------------
-
+  /**
+   * 跳转到信用分详情页
+   */
+  navigateToCreditDetail() {
+    wx.navigateTo({
+      url: '/pages/credit-detail/credit-detail'
+    });
+  },
   navigateToProfileDetail() { wx.navigateTo({ url: '/pages/profile-detail/profile-detail' }); },
   navigateToSettings() { wx.navigateTo({ url: '/pages/settings/settings' }); },
   navigateToUserTags() { wx.navigateTo({ url: '/pages/user-tags/user-tags' }); },

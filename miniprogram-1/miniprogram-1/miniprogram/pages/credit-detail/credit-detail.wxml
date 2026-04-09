@@ -11,8 +11,8 @@
       <view class="credit-score-card">
         <text class="score-label">当前信用分</text>
         <text class="score-value">{{creditScore}}</text>
-        <view class="score-level {{creditScore >= 800 ? 'excellent' : creditScore >= 600 ? 'good' : 'poor'}}">
-          {{creditScore >= 800 ? '信用优秀' : creditScore >= 600 ? '信用良好' : '信用一般'}}
+        <view class="score-level {{creditScore >= 800 ? 'excellent' : creditScore >= 700 ? 'good' : 'poor'}}">
+          {{creditScore >= 800 ? '信用优秀' : creditScore >= 700 ? '信用良好' : '信用一般'}}
         </view>
       </view>
       <view class="rules-btn" bindtap="viewCreditRules">
