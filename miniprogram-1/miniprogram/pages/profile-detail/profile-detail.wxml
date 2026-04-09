@@ -1,0 +1,62 @@
+<view class="container">
+  <!-- 头部 -->
+  <view class="header">
+    <view class="back-button" bindtap="navigateBack">
+      <text class="back-icon">←</text>
+    </view>
+    <view class="title">个人主页</view>
+    <view class="settings-button" bindtap="navigateToSettings">
+      <text class="settings-icon">⚙️</text>
+    </view>
+  </view>
+
+  <!-- 个人信息区域 -->
+  <view class="info-section">
+    <view class="avatar-container">
+      <image class="avatar" src="{{userInfo.avatarUrl || '/images/default-avatar.png'}}"></image>
+    </view>
+    <text class="nickname">{{userInfo.nickname || '用户'}}</text>
+    <text class="user-id">ID: {{userInfo._id ? userInfo._id.substring(0, 6) : '123456'}}</text>
+    <text class="user-bio" wx:if="{{userInfo.bio}}">{{userInfo.bio}}</text>
+  </view>
+
+  <!-- 数据统计 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <text class="stat-number">{{userInfo.creditScore || 800}}</text>
+      <text class="stat-label">TA的信用</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-number">{{userInfo.tags_self ? userInfo.tags_self.length : 0}}</text>
+      <text class="stat-label">TA的标签</text>
+    </view>
+    <view class="stat-divider"></view>
+    <view class="stat-item">
+      <text class="stat-number">{{userInfo.dynamicCount || 23}}</text>
+      <text class="stat-label">TA的动态</text>
+    </view>
+  </view>
+
+  <!-- 功能入口 -->
+  <view class="features-section">
+    <view class="feature-item" bindtap="navigateToScripts">
+      <text class="feature-text">TA参与的剧本</text>
+      <text class="feature-arrow">→</text>
+    </view>
+    <view class="feature-item" bindtap="navigateToBadges">
+      <text class="feature-text">TA的勋章</text>
+      <text class="feature-arrow">→</text>
+    </view>
+    <view class="feature-item" bindtap="navigateToBio">
+      <text class="feature-text">TA的个签</text>
+      <text class="feature-arrow">→</text>
+    </view>
+  </view>
+
+  <!-- 底部操作栏 -->
+  <view class="action-section">
+    <button class="action-button evaluate-button" bindtap="navigateToRateUser">评价TA</button>
+    <button class="action-button chat-button">和TA聊</button>
+  </view>
+</view>
