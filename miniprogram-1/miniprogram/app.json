@@ -16,6 +16,7 @@
     "pages/credit-rules/credit-rules",
     "pages/rate-user/rate-user"
   ],
+  "lazyCodeLoading": "requiredComponents",
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffffff",
@@ -29,13 +30,13 @@
     "list": [
       {
         "pagePath": "pages/lobby/lobby",
-        "text": "组局大厅",
+        "text": "日程",
         "iconPath": "images/home.png",
         "selectedIconPath": "images/home-active.png"
       },
       {
         "pagePath": "pages/scripts/scripts",
-        "text": "剧本大厅",
+        "text": "发现",
         "iconPath": "images/script.png",
         "selectedIconPath": "images/script-active.png"
       },

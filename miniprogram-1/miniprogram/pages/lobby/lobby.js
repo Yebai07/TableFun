@@ -3,6 +3,12 @@ const { calcLockStatusList } = require('../../utils');
 
 Page({
   data: {
+    inReview: true,
+    fakeMemos: [
+      { id: 1, title: '去超市买牛奶和鸡蛋', time: '今天 18:00', type: '生活' },
+      { id: 2, title: '晚上 8 点和老王有个线上会议', time: '今天 20:00', type: '工作' },
+      { id: 3, title: '周末去修理厂保养车子', time: '本周六', type: '日程' }
+    ],
     timer: null,
     typeOptions: ['全部', '情感', '硬核', '欢乐', '阵营', '惊悚', '机制'],
     currentType: '全部类型',
@@ -13,6 +19,7 @@ Page({
   },
 
   onShow() {
+    this.checkReviewStatus();
     this.fetchTeamupList();
   },
 
@@ -22,6 +29,31 @@ Page({
 
   onUnload() {
     if (this.data.timer) clearInterval(this.data.timer);
+  },
+  checkReviewStatus() {
+    this.setData({ isLoading: true });
+    
+    db.collection('app_config').doc('review_switch').get({
+      success: (res) => {
+        const isReviewing = res.data.inReview;
+        
+        wx.setStorageSync('GLOBAL_IN_REVIEW', isReviewing);
+
+        this.setData({ 
+          inReview: isReviewing,
+          isLoading: false
+        });
+
+        if (!isReviewing) {
+          this.fetchTeamupList();
+        }
+      },
+      fail: (err) => {
+        // 断网或报错时，强制设为 true，安全第一
+        wx.setStorageSync('GLOBAL_IN_REVIEW', true);
+        this.setData({ inReview: true, isLoading: false });
+      }
+    });
   },
 
   fetchTeamupList() {
@@ -37,7 +69,6 @@ Page({
         const keyword = (this.data.searchKeyword || '').trim().toLowerCase();
 
         const filtered = res.data.filter(item => {
-          // 1. 过滤已过期且未满员的僵尸车
           const startTimestamp = new Date(item.startTime.replace(/-/g, '/')).getTime();
           const isExpired = now >= startTimestamp && item.currentPlayers < item.targetPlayers;
           if (isExpired) return false;
@@ -74,7 +105,7 @@ Page({
         this.setData({ timer });
       })
       .catch(err => {
-        console.error('获取组局列表失败', err);
+        console.error('获取列表失败', err);
         this.setData({ isLoading: false });
         wx.showToast({ title: '加载失败，请重试', icon: 'none' });
       });

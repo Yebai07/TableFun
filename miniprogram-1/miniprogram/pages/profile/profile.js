@@ -36,6 +36,8 @@ Page({
   },
 
   onShow() {
+    const isReviewing = wx.getStorageSync('GLOBAL_IN_REVIEW') ?? true; // 查不到默认 true
+    this.setData({ inReview: isReviewing });
     const isManualLogout = wx.getStorageSync('isManualLogout');
     if (isManualLogout) {
       this.setData({ isRegistered: false, isLoading: false, userInfo: null });

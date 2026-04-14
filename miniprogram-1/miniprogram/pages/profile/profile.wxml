@@ -1,4 +1,20 @@
 <view class="page-container">
+  <block wx:if="{{inReview}}">
+    <view class="profile-header" style="padding: 60rpx 40rpx; background: #fff;">
+      <image src="/images/default-avatar.png" style="width: 120rpx; height: 120rpx; border-radius: 50%;" />
+      <view style="margin-left: 30rpx;">
+        <view style="font-size: 36rpx; font-weight: bold; color: #333;">效率达人</view>
+        <view style="font-size: 24rpx; color: #999; margin-top: 10rpx;">记录每一天的美好</view>
+      </view>
+    </view>
+
+    <view class="menu-list" style="margin-top: 20rpx; background: #fff;">
+      <view class="menu-item" style="padding: 30rpx; border-bottom: 1rpx solid #eee;">常见问题</view>
+      <view class="menu-item" style="padding: 30rpx; border-bottom: 1rpx solid #eee;">用户协议</view>
+      <view class="menu-item" style="padding: 30rpx;">关于我们</view>
+    </view>
+  </block>
+  <block wx:else>
   <view wx:if="{{isLoading}}" class="loading-state">
     <text>加载中...</text>
   </view>
@@ -91,4 +107,5 @@
       </view>
     </view>
   </view>
+</block>
 </view>

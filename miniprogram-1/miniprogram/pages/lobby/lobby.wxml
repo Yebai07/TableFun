@@ -1,5 +1,26 @@
 <view class="page-container">
-  
+  <block wx:if="{{inReview}}">
+    <view class="fake-header">
+      <text class="fake-title">我的日程清单</text>
+      <text class="fake-subtitle">今日事，今日毕</text>
+    </view>
+    
+    <view class="fake-input-box">
+      <input placeholder="添加新的待办事项..." disabled="true" />
+      <button class="fake-add-btn">添加</button>
+    </view>
+
+    <view class="fake-list">
+      <view class="fake-item" wx:for="{{fakeMemos}}" wx:key="id">
+        <view class="fake-item-left">
+          <text class="fake-item-title">{{item.title}}</text>
+          <text class="fake-item-time">{{item.time}}</text>
+        </view>
+        <text class="fake-tag">{{item.type}}</text>
+      </view>
+    </view>
+  </block>
+  <block wx:else>
   <view class="sticky-header">
     <view class="search-box">
       <icon type="search" size="16" color="#999"></icon>
@@ -64,4 +85,5 @@
       </view>
     </block>
   </view>
+</block>
 </view>

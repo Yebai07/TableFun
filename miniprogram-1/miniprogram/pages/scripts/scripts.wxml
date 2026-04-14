@@ -1,4 +1,31 @@
 <view class="page-container">
+  <block wx:if="{{inReview}}">
+    <view style="padding: 20rpx 0 40rpx;">
+      <text style="font-size: 44rpx; font-weight: bold; color: #333; display: block;">我的项目</text>
+      <text style="font-size: 26rpx; color: #999;">分类管理你的所有事务</text>
+    </view>
+
+    <view style="display: grid; grid-template-columns: 1fr 1fr; gap: 30rpx;">
+      <view style="background: #fff; padding: 40rpx; border-radius: 20rpx; box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);">
+        <view style="font-size: 40rpx; margin-bottom: 20rpx;">📁</view>
+        <view style="font-size: 30rpx; font-weight: bold; color: #333;">工作计划</view>
+        <view style="font-size: 24rpx; color: #999; margin-top: 10rpx;">包含 12 个待办</view>
+      </view>
+      
+      <view style="background: #fff; padding: 40rpx; border-radius: 20rpx; box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);">
+        <view style="font-size: 40rpx; margin-bottom: 20rpx;">📚</view>
+        <view style="font-size: 30rpx; font-weight: bold; color: #333;">学习提升</view>
+        <view style="font-size: 24rpx; color: #999; margin-top: 10rpx;">包含 5 个待办</view>
+      </view>
+      
+      <view style="background: #fff; padding: 40rpx; border-radius: 20rpx; box-shadow: 0 4rpx 12rpx rgba(0,0,0,0.03);">
+        <view style="font-size: 40rpx; margin-bottom: 20rpx;">🏃</view>
+        <view style="font-size: 30rpx; font-weight: bold; color: #333;">运动健康</view>
+        <view style="font-size: 24rpx; color: #999; margin-top: 10rpx;">包含 3 个待办</view>
+      </view>
+    </view>
+  </block>
+  <block wx:else>
   <view class="loading-state" wx:if="{{isLoading}}">
     <text>正在加载剧本宇宙...</text>
   </view>
@@ -26,4 +53,5 @@
       </view>
     </block>
   </view>
+</block>
 </view>

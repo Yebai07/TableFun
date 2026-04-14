@@ -13,6 +13,14 @@ Page({
   onLoad(options) {
     this.fetchScriptsData()
   },
+  onShow() {
+    const isReviewing = wx.getStorageSync('GLOBAL_IN_REVIEW') ?? true;
+    this.setData({ inReview: isReviewing });
+
+    if (!isReviewing) {
+      this.fetchScriptsData()
+    }
+  },
 
   /**
    * 页面相关事件处理函数--监听用户下拉动作
